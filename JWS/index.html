@@ -271,14 +271,93 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
 </div>
 <section id="overlay" class="overlay"><div id="pt" class="phase-title"></div><div id="pp" class="phase-prayer"></div><div id="pc" class="phase-count"></div><div id="people" class="phase-people"></div><div id="note" class="phase-note"></div><div id="iqTickerWrap" class="iqamah-ticker"><div class="ticker-icon">🔇</div><div class="ticker-window"><div id="iqTicker" class="ticker"></div></div></div></section>
 <button class="gear" onclick="alert('OK')">&#128339;</button>
-<section id="panel" class="panel"><h2>PENGATURAN JWS v2.0 STABLE</h2><div class="tabs"><button class="on" onclick="tab(0,this)">UMUM & LOKASI</button><button onclick="tab(1,this)">JADWAL</button><button onclick="tab(2,this)">TAMPILAN</button><button onclick="tab(3,this)">SLIDESHOW</button><button onclick="tab(4,this)">PETUGAS</button><button onclick="tab(5,this)">FASE HARIAN</button><button onclick="tab(6,this)">JUMAT</button><button onclick="tab(7,this)">PHBI</button><button onclick="tab(8,this)">KAS</button><button onclick="tab(9,this)">ADMIN</button></div><div class="page on"><div id="p0" class="grid"></div></div><div class="page"><div id="p1" class="grid"></div></div><div class="page"><div id="p2" class="grid"></div></div><div class="page"><div id="p3" class="grid"></div></div><div class="page"><div id="p4" class="grid"></div></div><div class="page"><div id="p5" class="grid"></div></div><div class="page"><div id="p6" class="grid"></div></div><div class="page"><div id="p7" class="grid"></div></div><div class="page"><div id="p8" class="grid"></div></div><div class="page"><div id="p9" class="grid"></div></div><div class="actions"><button class="save" onclick="saveSettings()">SIMPAN SEMUA</button><button onclick="loadPrayerLocation()">AMBIL JADWAL LOKASI</button><button onclick="enableBeepAndTest()">AKTIFKAN / TEST BEEP</button><button onclick="testDaily()">TEST COUNTDOWN</button><button onclick="testFriday()">TEST FULL JUMAT</button><button class="close" onclick="closeSettings()">TUTUP</button></div><div id="status" class="status"></div></section>
+<section id="panel" class="panel"><h2>PENGATURAN JWS v2.0 STABLE</h2><div class="tabs"><button class="on" onclick="tab(0,this)">UMUM & LOKASI</button><button onclick="tab(1,this)">JADWAL</button><button onclick="tab(2,this)">TAMPILAN</button><button onclick="tab(3,this)">SLIDESHOW</button><button onclick="tab(4,this)">PETUGAS</button><button onclick="tab(5,this)">FASE HARIAN</button><button onclick="tab(6,this)">JUMAT</button><button onclick="tab(7,this)">PHBI</button><button onclick="tab(8,this)">KAS</button><button onclick="tab(9,this)">ADMIN</button></div><div class="page on"><div id="p0" class="grid"></div></div><div class="page"><div id="p1" class="grid"></div></div><div class="page"><div id="p2" class="grid"></div></div><div class="page"><div id="p3" class="grid"></div></div><div class="page"><div id="p4" class="grid"></div></div><div class="page"><div id="p5" class="grid"></div></div><div class="page"><div id="p6" class="grid"></div></div><div class="page"><div id="p7" class="grid"></div></div><div class="page"><div id="p8" class="grid"></div></div><div class="page"><div id="p9" class="grid"></div></div><div class="actions"><button class="save" onclick="saveSettings()">SIMPAN SEMUA</button><button onclick="loadPrayerLocation()">AMBIL JADWAL LOKASI</button><button onclick="enableBeepAndTest()">AKTIFKAN / TEST BEEP</button>
+<button onclick="beepWarning()">Test Warning</button>
+<button onclick="beepSholat()">Test Sholat</button>
+<button onclick="testBeepAuto()">TEST AUTO BEEP</button>
+<button onclick="testDaily()">TEST COUNTDOWN</button><button onclick="testFriday()">TEST FULL JUMAT</button><button class="close" onclick="closeSettings()">TUTUP</button></div><div id="status" class="status"></div></section>
 <script>
 (function(){'use strict';
 const ALL=['Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],SHOW=['Imsak','Fajr','Dhuhr','Asr','Maghrib','Isha'],DAILY=['Fajr','Dhuhr','Asr','Maghrib','Isha'],L={Imsak:'IMSAK',Fajr:'SHUBUH',Sunrise:'SYURUQ',Dhuhr:'DZUHUR',Asr:'ASHAR',Maghrib:'MAGHRIB',Isha:'ISYA'};
 const DEF={g:{name:'MASJID JAMIE BABUSSALAM',loc:'Cikampek, Jawa Barat',lat:-6.400173,lon:107.443611,zone:'Asia/Jakarta',mode:'MANUAL',method:20,logo:'logo.png',logoData:'',locFont:'Tahoma',locSize:1.35,locColor:'#e7f1ff',ticker:'Selamat Datang di Masjid Jamie Babussalam',iqamahTicker:'Mohon bersiap, luruskan dan rapatkan shaf. Matikan atau senyapkan ponsel.',tickerSize:2.8,header:'#1763a5',brand:'#ffe83b',clock:'#70f2ff',tickerColor:'#ffe83b',schedule:'#1768ad',font:'Tahoma',slides:'background.jpeg,poster1.jpg,poster2.jpg',seconds:12,hijri:1,beepEnabled:true,beepBefore:10,beepFreq:880,beepDuration:1000,beepVolume:.45},admin:{mode:'AUTO',title:20,label:14,input:12,button:12,width:50,cols:4},base:{Imsak:'04:31',Fajr:'04:41',Sunrise:'06:00',Dhuhr:'12:02',Asr:'15:17',Maghrib:'18:00',Isha:'19:10'},corr:{Imsak:0,Fajr:0,Sunrise:0,Dhuhr:0,Asr:0,Maghrib:0,Isha:0},daily:{Fajr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:0},Dhuhr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:5},Asr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:0},Maghrib:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:5},Isha:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:5}},fri:{first:'11:50',pre:1,a1:5,wait:7,a2:5,khutbah:15,prayer:10,rawatib:5,khatib:'Ustadz Eko',imam:'Ustadz Eko',bilal:'Syafei'},phbi:{name:'',date:'',note:''},cash:{period:'Periode Bulan Berjalan',opening:0,income:0,expense:0,balance:0}};
 let C=load(),T={},slideTimer,simTimer,sim=false,audioCtx=null,lastBeep='',previousState='',pendingLogoData='';
 function $(i){return document.getElementById(i)}function cp(o){return JSON.parse(JSON.stringify(o))}function merge(a,b){if(!b)return a;Object.keys(b).forEach(k=>a[k]=(typeof b[k]==='object'&&b[k]&&!Array.isArray(b[k]))?merge(a[k]||{},b[k]):b[k]);return a}function load(){try{const raw=localStorage.getItem('JWS_COMPLETE_V2_0')||localStorage.getItem('JWS_COMPLETE_V1_9')||localStorage.getItem('JWS_COMPLETE_V1_8')||localStorage.getItem('JWS_COMPLETE_V1_7')||localStorage.getItem('JWS_COMPLETE_V1_6');return merge(cp(DEF),JSON.parse(raw)||{})}catch(e){return cp(DEF)}}function save(){try{localStorage.setItem('JWS_COMPLETE_V2_0',JSON.stringify(C))}catch(e){$('status').innerHTML='Penyimpanan browser tidak tersedia pada mode preview.'}}function pad(v){return +v<10?'0'+(+v):String(v)}function at(d,t){const p=t.split(':');return new Date(d.getFullYear(),d.getMonth(),d.getDate(),+p[0],+p[1])}function add(t,m){const p=t.split(':'),d=new Date(2000,0,1,+p[0],+p[1]+(+m||0));return pad(d.getHours())+':'+pad(d.getMinutes())}function cd(s){s=Math.max(0,Math.ceil(s));return pad(Math.floor(s/60))+':'+pad(s%60)}function rupiah(n){return'Rp '+Number(n||0).toLocaleString('id-ID')}
-function ensureAudio(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return true}catch(e){return false}}function beep(count){if(!C.g.beepEnabled||!ensureAudio())return;for(let i=0;i<(count||1);i++){const start=audioCtx.currentTime+i*((+C.g.beepDuration||700)/1000+.18),osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.frequency.value=+C.g.beepFreq||880;gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(Math.max(.01,+C.g.beepVolume||.45),start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+(+C.g.beepDuration||700)/1000);osc.connect(gain);gain.connect(audioCtx.destination);osc.start(start);osc.stop(start+(+C.g.beepDuration||700)/1000+.03)}}window.enableBeepAndTest=function(){if(ensureAudio()){beep(2);$('status').innerHTML='Beep aktif.'}};
+//let audioCtx=null;
+function ensureAudio(){
+  try{
+    if(!audioCtx){
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    }
+    if(audioCtx.state==='suspended'){
+      audioCtx.resume();
+    }
+    return true;
+  }catch(e){
+    console.log('AudioContext error',e);
+    return false;
+  }
+}
+function beepOnce(freq,duration){
+  try{
+    ensureAudio();
+    if(audioCtx&&audioCtx.state==='suspended'){
+      audioCtx.resume();
+    }
+  }catch(e){
+    console.log(e);
+  }
+
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
+
+  osc.type='sine';
+  osc.frequency.value=freq;
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  gain.gain.setValueAtTime(0.5,audioCtx.currentTime);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime+(duration/1000));
+}
+function beepPattern(count=3,interval=300,freq=1000,duration=120){
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      beepOnce(freq,duration);
+    },i*interval);
+  }
+}
+console.log('BEEP BLOCK LOADED');
+window.beepWarning=function(){
+  beepOnce(1200,60);
+  setTimeout(()=>beepOnce(1200,60),120);
+  setTimeout(()=>beepOnce(1200,60),240);
+};
+window.beepSholat=function(){
+  console.log('SHOLAT BEEP EXECUTED');
+  beepOnce(1000,900);
+};
+window.testWarning=function(){
+  beepWarning();
+};
+window.testSholat=function(){
+  beepSholat();
+};
+window.testBeepAuto=function(){
+  beepWarning();
+  setTimeout(()=>beepSholat(),5000);
+};
+function beep(count){if(!C.g.beepEnabled||!ensureAudio())return;for(let i=0;i<(count||1);i++){const start=audioCtx.currentTime+i*((+C.g.beepDuration||700)/1000+.18),osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.frequency.value=+C.g.beepFreq||880;gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(Math.max(.01,+C.g.beepVolume||.45),start+.02);gain.gain.exponentialRampToValueAtTime(.0001,start+(+C.g.beepDuration||700)/1000);osc.connect(gain);gain.connect(audioCtx.destination);osc.start(start);osc.stop(start+(+C.g.beepDuration||700)/1000+.03)}}
+window.enableBeepAndTest=function(){
+  if(ensureAudio()){
+    audioCtx.resume().then(()=>{
+      beepWarning();
+      $('status').innerHTML='Beep aktif.';
+      window.beepUnlocked=true;
+    });
+  }
+};
 function hijri(d){d=new Date(d.getTime()+(+C.g.hijri||0)*864e5);const q=d.getDate(),mo=d.getMonth()+1,y0=d.getFullYear(),a=Math.floor((14-mo)/12),y=y0+4800-a,m=mo+12*a-3,jd=q+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;let l=jd-1948440+10632;const n=Math.floor((l-1)/10631);l=l-10631*n+354;const j=Math.floor((10985-l)/5316)*Math.floor((50*l)/17719)+Math.floor(l/5670)*Math.floor((43*l)/15238);l=l-Math.floor((30-j)/15)*Math.floor((17719*j)/50)-Math.floor(j/16)*Math.floor((15238*j)/43)+29;const hm=Math.floor((24*l)/709),hd=l-Math.floor((709*hm)/24),hy=30*n+j-30,names=['Muharam','Safar','Rabiul Awal','Rabiul Akhir','Jumadil Awal','Jumadil Akhir','Rajab','Syaban','Ramadan','Syawal','Zulkaidah','Zulhijah'];return hd+' '+names[hm-1]+' '+hy+' H'}
 const PHBI_EVENTS=[{d:1,m:'Muharam',n:'Tahun Baru Islam'},{d:10,m:'Muharam',n:'Hari Asyura'},{d:12,m:'Rabiul Awal',n:'Maulid Nabi Muhammad'},{d:27,m:'Rajab',n:'Isra Mikraj Nabi Muhammad'},{d:15,m:'Syaban',n:'Nisfu Syaban'},{d:1,m:'Ramadan',n:'Awal Ramadan'},{d:17,m:'Ramadan',n:'Nuzulul Quran'},{d:1,m:'Syawal',n:'Idul Fitri'},{d:10,m:'Zulhijah',n:'Idul Adha'}];
 function nextPHBI(){const today=new Date();today.setHours(0,0,0,0);for(let offset=0;offset<400;offset++){const date=new Date(today.getTime()+offset*864e5),text=hijri(date);for(const event of PHBI_EVENTS){if(text.indexOf(event.d+' '+event.m+' ')===0)return{name:event.n,date:date,days:offset}}}return null}
@@ -355,7 +434,25 @@ function slides(){if(slideTimer)clearInterval(slideTimer);document.querySelector
   return;
 };let n=0;A[0].className='slide on';$('placeholder').style.display='none';slideTimer=setInterval(()=>{A[n].className='slide';n=(n+1)%A.length;A[n].className='slide on'},Math.max(3,+C.g.seconds)*1000)}
 function fplan(n){if(n.getDay()!==5)return null;const f=C.fri,a1=at(n,f.first),pre=new Date(a1-f.pre*6e4),a1e=new Date(a1.getTime()+f.a1*6e4),a2=new Date(a1e.getTime()+f.wait*6e4),a2e=new Date(a2.getTime()+f.a2*6e4),ke=new Date(a2e.getTime()+f.khutbah*6e4),pe=new Date(ke.getTime()+f.prayer*6e4),re=new Date(pe.getTime()+f.rawatib*6e4);return{pre,a1,a1e,a2,a2e,ke,pe,re}}function state(n){const p=fplan(n);if(p){if(n>=p.pre&&n<p.a1)return{m:'fpre',e:p.a1};if(n>=p.a1&&n<p.a1e)return{m:'a1',e:p.a1e};if(n>=p.a1e&&n<p.a2)return{m:'wait',e:p.a2};if(n>=p.a2&&n<p.a2e)return{m:'a2',e:p.a2e};if(n>=p.a2e&&n<p.ke)return{m:'kh',e:p.ke};if(n>=p.ke&&n<p.pe)return{m:'fp',e:p.pe};if(n>=p.pe&&n<p.re)return{m:'fr',e:p.re}}for(const k of DAILY){if(n.getDay()===5&&k==='Dhuhr')continue;const c=C.daily[k],pr=at(n,T[k]),pre=new Date(pr-c.pre*6e4),iq=new Date(pr.getTime()+c.iqamah*6e4),pe=new Date(iq.getTime()+c.prayer*6e4),re=new Date(pe.getTime()+c.rawatib*6e4);if(n>=pre&&n<pr)return{m:'pre',k,e:pr};if(n>=pr&&n<iq)return{m:'iq',k,e:iq};if(n>=iq&&n<pe)return{m:'pr',k,e:pe};if(n>=pe&&n<re)return{m:'rw',k,e:re}}return null}
-function processBeep(s,n){const key=s?s.m+':'+(s.k||''):'';if(s){const remain=Math.ceil((s.e-n)/1000);if((s.m==='pre'||s.m==='fpre')&&remain===+C.g.beepBefore){const mark='before:'+key+':'+n.toDateString();if(lastBeep!==mark){lastBeep=mark;beep(2)}}if(previousState.indexOf('iq:')===0&&s.m==='pr')beep(3)}previousState=key}
+
+function processBeep(s,n){
+  const key=s?s.m+':'+(s.k||''):'';
+  if(s){
+    const remain=Math.ceil((s.e-n)/1000);
+    if((s.m==='pre'||s.m==='fpre')&&remain<=5&&remain>0){
+      const mark='warning:'+key+':'+remain+':'+n.toDateString();
+      if(lastBeep!==mark){
+        lastBeep=mark;
+        beepWarning();
+      }
+    }
+    if(s.m==='iq'&&remain<=0){
+  console.log('TRIGGER SHOLAT');
+  beepSholat();
+}
+  }
+  previousState=key;
+}
 function setP(t,p,c,who,note,show,flash,n,iqTicker){$('pt').innerHTML=t;$('pp').innerHTML=p;$('pc').innerHTML=c;$('people').innerHTML=who;$('note').innerHTML=note;$('pc').style.display=show?'block':'none';$('pt').className=flash&&n.getSeconds()%2===0?'phase-title flash':'phase-title';$('iqTickerWrap').className=iqTicker?'iqamah-ticker show':'iqamah-ticker'}function render(s,n){const o=$('overlay');if(!s){o.className='overlay';$('iqTickerWrap').className='iqamah-ticker';return}o.className='overlay show';const f=C.fri,r=cd((s.e-n)/1000);if(s.m==='fpre')setP('SEBENTAR LAGI','ADZAN PERTAMA SHALAT JUMAT',r,'KHATIB: '+f.khatib,'',true,true,n,false);else if(s.m==='a1')setP('ADZAN PERTAMA','SHALAT JUMAT','','BILAL: '+f.bilal,'',false,false,n,false);else if(s.m==='wait')setP('MENUJU ADZAN KEDUA','SHALAT JUMAT',r,'KHATIB: '+f.khatib,'',true,true,n,false);else if(s.m==='a2')setP('ADZAN KEDUA','SHALAT JUMAT','','BILAL: '+f.bilal,'',false,false,n,false);else if(s.m==='kh')setP('KHUTBAH JUMAT',f.khatib,'','KHATIB','Mohon Menjaga Ketenangan Selama Khutbah Berlangsung',false,false,n,false);else if(s.m==='fp')setP('SHALAT JUMAT',f.imam,'','IMAM','Mohon menjaga ketenangan',false,false,n,false);else if(s.m==='fr')setP("SHALAT SUNNAH BA'DIYAH",'JUMAT',r,'','',true,false,n,false);else{const im='IMAM: '+C.daily[s.k].imam;if(s.m==='pre')setP('SEBENTAR LAGI MASUK WAKTU',L[s.k],r,im,'',true,true,n,false);if(s.m==='iq'){
 
   const totalIqamah =
@@ -428,7 +525,32 @@ function forms(){const g=C.g,a=C.admin;$('p0').innerHTML=card(inp('Nama Masjid',
 window.handleLogoFile=function(input){const file=input.files&&input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(){pendingLogoData=reader.result;$('status').innerHTML='Logo siap. Tekan SIMPAN SEMUA.'};reader.readAsDataURL(file)};window.clearUploadedLogo=function(){pendingLogoData='';C.g.logoData='';$('status').innerHTML='Logo upload dihapus. Tekan SIMPAN SEMUA.'};
 window.openSettings=function(){forms();$('panel').className='panel show'};window.closeSettings=function(){$('panel').className='panel'};window.tab=function(n,b){document.querySelectorAll('.page').forEach(e=>e.className='page');document.querySelectorAll('.tabs button').forEach(e=>e.className='');document.querySelectorAll('.page')[n].className='page on';b.className='on'};
 window.saveSettings=function(){const g=C.g,a=C.admin,f=C.fri;g.name=$('gName').value;g.loc=$('gLoc').value;g.lat=+$('gLat').value;g.lon=+$('gLon').value;g.zone=$('gZone').value;g.mode=$('gMode').value;g.method=+$('gMethod').value;g.hijri=+$('gHijri').value;g.logo=$('gLogo').value;if(pendingLogoData)g.logoData=pendingLogoData;g.locFont=$('gLF').value;g.locSize=+$('gLS').value;g.locColor=$('gLC').value;g.font=$('gFont').value;g.tickerSize=+$('gTS').value;g.header=$('gHeader').value;g.brand=$('gBrand').value;g.clock=$('gClock').value;g.tickerColor=$('gTickerColor').value;g.schedule=$('gSchedule').value;g.ticker=$('gTicker').value;g.iqamahTicker=$('gIqTicker').value;g.beepEnabled=$('gBeep').value==='YA';g.beepBefore=+$('gBeepBefore').value;g.beepFreq=+$('gBeepFreq').value;g.beepDuration=+$('gBeepDuration').value;g.beepVolume=+$('gBeepVolume').value;g.slides=$('gSlides').value;g.seconds=+$('gSec').value;ALL.forEach(k=>{C.base[k]=$('b'+k).value;C.corr[k]=Number($('c'+k).value||0)});DAILY.forEach(k=>C.daily[k]={imam:$('i'+k).value,pre:+$('pre'+k).value,iqamah:+$('iq'+k).value,prayer:+$('pr'+k).value,rawatib:+$('rw'+k).value});f.first=$('fFirst').value;f.pre=+$('fPre').value;f.a1=+$('fA1').value;f.wait=+$('fWait').value;f.a2=+$('fA2').value;f.khutbah=+$('fKh').value;f.prayer=+$('fPr').value;f.rawatib=+$('fRw').value;f.khatib=$('fKhatib').value;f.imam=$('fImam').value;f.bilal=$('fBilal').value;C.phbi.name=$('phName').value;C.phbi.date=$('phDate').value;C.phbi.note=$('phNote').value;C.cash.period=$('cashPeriod').value;C.cash.opening=+$('cashOpening').value;C.cash.income=+$('cashIncome').value;C.cash.expense=+$('cashExpense').value;a.mode=$('aMode').value;a.width=+$('aWidth').value;a.cols=+$('aCols').value;a.title=+$('aTitle').value;a.label=+$('aLabel').value;a.input=+$('aInput').value;a.button=+$('aButton').value;save();apply();closeSettings()};
-window.testDaily=function(){closeSettings();sim=true;const e=new Date(Date.now()+15e3);simTimer=setInterval(()=>{const n=new Date();if(n>=e){clearInterval(simTimer);sim=false;$('overlay').className='overlay';return}render({m:'iq',k:'Maghrib',e},n)},1000)};window.testFriday=function(){closeSettings();sim=true;const A=['fpre','a1','wait','a2','kh','fp','fr'];let i=0;function go(){if(i>=A.length){sim=false;$('overlay').className='overlay';return}const m=A[i++],e=new Date(Date.now()+5e3);simTimer=setInterval(()=>{const n=new Date();if(n>=e){clearInterval(simTimer);go();return}render({m,e},n)},1000)}go()};
+window.testDaily=function(){
+  closeSettings();
+  sim=true;
+  const e=new Date(Date.now()+15e3);
+  let lastRemain=999;
+  simTimer=setInterval(()=>{
+    const n=new Date();
+    const remain=Math.ceil((e-n)/1000);
+
+    if(remain<=5&&remain>0&&remain!==lastRemain){
+      lastRemain=remain;
+      beepWarning();
+    }
+
+    if(n>=e){
+      clearInterval(simTimer);
+      sim=false;
+      $('overlay').className='overlay';
+      beepSholat();
+      return;
+    }
+
+    render({m:'iq',k:'Maghrib',e},n);
+  },1000);
+}
+;window.testFriday=function(){closeSettings();sim=true;const A=['fpre','a1','wait','a2','kh','fp','fr'];let i=0;function go(){if(i>=A.length){sim=false;$('overlay').className='overlay';return}const m=A[i++],e=new Date(Date.now()+5e3);simTimer=setInterval(()=>{const n=new Date();if(n>=e){clearInterval(simTimer);go();return}render({m,e},n)},1000)}go()};
 function formatTanggalIndonesia(value){
   if(!value) return '-';
   const date = new Date(String(value).substring(0,10) + 'T00:00:00');
@@ -948,5 +1070,12 @@ setInterval(
 
 })();
 </script>
+function testWarning(){
+  beepWarning();
+}
+
+function testSholat(){
+  beepSholat();
+}
 </body>
 </html>
