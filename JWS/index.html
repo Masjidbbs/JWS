@@ -298,6 +298,7 @@ function ensureAudio(){
   }
 }
 function beepOnce(freq,duration){
+  
   try{
     ensureAudio();
     if(audioCtx&&audioCtx.state==='suspended'){
@@ -336,6 +337,18 @@ window.beepSholat=function(){
   console.log('SHOLAT BEEP EXECUTED');
   beepOnce(1500,900);
 };
+//audio unloc
+function keepAudioAlive(){
+  try{
+    if(!audioCtx) return;
+
+    if(audioCtx.state==='suspended'){
+      audioCtx.resume();
+    }
+  }catch(e){}
+}
+setInterval(keepAudioAlive,60000);
+
 window.testWarning=function(){
   beepWarning();
 };
@@ -497,7 +510,8 @@ function setP(t,p,c,who,note,show,flash,n,iqTicker){$('pt').innerHTML=t;$('pp').
   );
 
 };if(s.m==='pr')setP('SHALAT SEDANG BERLANGSUNG',L[s.k],'',im,'Mohon Menjaga Ketenangan',false,false,n,false);if(s.m==='rw')setP('WAKTU SHALAT RAWATIB',L[s.k],r,im,'',true,false,n,false)}}
-function next(n){const fp=fplan(n);if(fp&&n<fp.a1)return{k:'JUMAT',d:fp.a1};for(const k of DAILY){if(n.getDay()===5&&k==='Dhuhr')continue;const d=at(n,T[k]);if(d>n)return{k,d}}const p=T.Fajr.split(':');return{k:'Fajr',d:new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,+p[0],+p[1])}}function tick(){const n=new Date(),x=next(n),df=Math.max(0,Math.floor((x.d-n)/1000));$('headerClock').innerHTML=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());const D=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];const bulan = [
+function next(n){const fp=fplan(n);if(fp&&n<fp.a1)return{k:'JUMAT',d:fp.a1};for(const k of DAILY){if(n.getDay()===5&&k==='Dhuhr')continue;const d=at(n,T[k]);if(d>n)return{k,d}}const p=T.Fajr.split(':');return{k:'Fajr',d:new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,+p[0],+p[1])}}
+function tick(){const n=new Date(),x=next(n),df=Math.max(0,Math.floor((x.d-n)/1000));$('headerClock').innerHTML=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());const D=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];const bulan = [
   'Januari',
   'Februari',
   'Maret',
@@ -1075,12 +1089,15 @@ setInterval(
     300000
 );
 tick();
-
-setInterval(
-    tick,
-    1000
-);
-
+setInterval(()=>{
+  try{
+    if(audioCtx && audioCtx.state!=='running'){
+      console.log('AUTO RESUME',audioCtx.state);
+      audioCtx.resume();
+    }
+  }catch(e){}
+  tick();
+},1000);
 })();
 </script>
 function testWarning(){
