@@ -312,10 +312,9 @@ function beepOnce(freq,duration){
   osc.frequency.value=freq;
   osc.connect(gain);
   gain.connect(audioCtx.destination);
-  gain.gain.setValueAtTime(
-  Math.max(0.05,+C.g.beepVolume||0.5),
-  audioCtx.currentTime
-);
+  const vol=Math.min(1,+C.g.beepVolume||0.5);
+gain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(vol,audioCtx.currentTime+0.01);
   osc.start();
   osc.stop(audioCtx.currentTime+(duration/1000));
 }
@@ -328,13 +327,13 @@ function beepPattern(count=3,interval=300,freq=1000,duration=120){
 }
 console.log('BEEP BLOCK LOADED');
 window.beepWarning=function(){
-  beepOnce(1200,60);
-  setTimeout(()=>beepOnce(1200,60),120);
-  setTimeout(()=>beepOnce(1200,60),240);
+  beepOnce(1800,60);
+  setTimeout(()=>beepOnce(1800,60),120);
+  setTimeout(()=>beepOnce(1800,60),240);
 };
 window.beepSholat=function(){
   console.log('SHOLAT BEEP EXECUTED');
-  beepOnce(1000,900);
+  beepOnce(1500,900);
 };
 window.testWarning=function(){
   beepWarning();
@@ -428,9 +427,12 @@ function fplan(n){if(n.getDay()!==5)return null;const f=C.fri,a1=at(n,f.first),p
 
 function processBeep(s,n){
   const key=s?s.m+':'+(s.k||''):'';
+
   if(s){
     const remain=Math.ceil((s.e-n)/1000);
-	console.log('MODE=',s.m,'REMAIN=',remain);
+    console.log('MODE=',s.m,'REMAIN=',remain);
+
+    // Warning 5 detik sebelum masuk waktu sholat
     if((s.m==='pre'||s.m==='fpre')&&remain<=5&&remain>0){
       const mark='warning:'+key+':'+remain+':'+n.toDateString();
       if(lastBeep!==mark){
@@ -438,16 +440,29 @@ function processBeep(s,n){
         beepWarning();
       }
     }
- if(previousState.indexOf('pre:')===0&&s.m==='iq'){
-  console.log('TRIGGER SHOLAT');
-  beepSholat();
-}
+
+    // Warning 5 detik sebelum masuk mode sholat
+    if(s.m==='iq'&&remain<=5&&remain>0){
+      const mark='iqwarning:'+key+':'+remain+':'+n.toDateString();
+      if(lastBeep!==mark){
+        lastBeep=mark;
+        beepWarning();
+      }
+    }
+
+    // TOOOT saat masuk waktu sholat (pre -> iq)
+    if(previousState.indexOf('pre:')===0&&s.m==='iq'){
+      console.log('TRIGGER SHOLAT');
+      beepSholat();
+    }
   }
-  //Mode sholat
+
+  // TOOOT saat masuk mode sholat (iq -> pr)
   if(previousState.indexOf('iq:')===0&&s.m==='pr'){
-  console.log('TRIGGER MODE SHOLAT');
-  beepSholat();
-}
+    console.log('TRIGGER MODE SHOLAT');
+    beepSholat();
+  }
+
   previousState=key;
 }
 function setP(t,p,c,who,note,show,flash,n,iqTicker){$('pt').innerHTML=t;$('pp').innerHTML=p;$('pc').innerHTML=c;$('people').innerHTML=who;$('note').innerHTML=note;$('pc').style.display=show?'block':'none';$('pt').className=flash&&n.getSeconds()%2===0?'phase-title flash':'phase-title';$('iqTickerWrap').className=iqTicker?'iqamah-ticker show':'iqamah-ticker'}function render(s,n){const o=$('overlay');if(!s){o.className='overlay';$('iqTickerWrap').className='iqamah-ticker';return}o.className='overlay show';const f=C.fri,r=cd((s.e-n)/1000);if(s.m==='fpre')setP('SEBENTAR LAGI','ADZAN PERTAMA SHALAT JUMAT',r,'KHATIB: '+f.khatib,'',true,true,n,false);else if(s.m==='a1')setP('ADZAN PERTAMA','SHALAT JUMAT','','BILAL: '+f.bilal,'',false,false,n,false);else if(s.m==='wait')setP('MENUJU ADZAN KEDUA','SHALAT JUMAT',r,'KHATIB: '+f.khatib,'',true,true,n,false);else if(s.m==='a2')setP('ADZAN KEDUA','SHALAT JUMAT','','BILAL: '+f.bilal,'',false,false,n,false);else if(s.m==='kh')setP('KHUTBAH JUMAT',f.khatib,'','KHATIB','Mohon Menjaga Ketenangan Selama Khutbah Berlangsung',false,false,n,false);else if(s.m==='fp')setP('SHALAT JUMAT',f.imam,'','IMAM','Mohon menjaga ketenangan',false,false,n,false);else if(s.m==='fr')setP("SHALAT SUNNAH BA'DIYAH",'JUMAT',r,'','',true,false,n,false);else{const im='IMAM: '+C.daily[s.k].imam;if(s.m==='pre')setP('SEBENTAR LAGI MASUK WAKTU',L[s.k],r,im,'',true,true,n,false);if(s.m==='iq'){
