@@ -313,12 +313,12 @@ function beepOnce(freq,duration){
   osc.frequency.value=freq;
   osc.connect(gain);
   gain.connect(audioCtx.destination);
-const vol=Math.min(1,+C.g.beepVolume||0.8);
+const vol=Math.min(1,+C.g.beepVolume||1);
 
 gain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
 gain.gain.exponentialRampToValueAtTime(
   vol,
-  audioCtx.currentTime+0.08
+  audioCtx.currentTime+0.03
 );
   osc.start();
   osc.stop(audioCtx.currentTime+(duration/1000));
