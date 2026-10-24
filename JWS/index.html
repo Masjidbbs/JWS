@@ -309,17 +309,14 @@ function beepOnce(freq,duration){
   }
   const osc=audioCtx.createOscillator();
   const gain=audioCtx.createGain();
-  osc.type='sine';
+  osc.type='triangle';
   osc.frequency.value=freq;
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 const vol=Math.min(1,+C.g.beepVolume||1);
 
 gain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
-gain.gain.exponentialRampToValueAtTime(
-  vol,
-  audioCtx.currentTime+0.03
-);
+gain.gain.exponentialRampToValueAtTime(vol,audioCtx.currentTime+0.003)
   osc.start();
   osc.stop(audioCtx.currentTime+(duration/1000));
 }
