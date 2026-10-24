@@ -116,7 +116,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
 @keyframes agendaUp{
     0%{
         transform:
-            translateY(100%);
+            translateY(0);
     }
     100%{
         transform:
@@ -316,7 +316,7 @@ function beepOnce(freq,duration){
 const vol=Math.min(1,+C.g.beepVolume||1);
 
 gain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
-gain.gain.exponentialRampToValueAtTime(vol,audioCtx.currentTime+0.003)
+gain.gain.exponentialRampToValueAtTime(vol,audioCtx.currentTime+0.003);
   osc.start();
   osc.stop(audioCtx.currentTime+(duration/1000));
 }
@@ -548,8 +548,7 @@ $('offName').innerHTML =
       : '-');SHOW.forEach(k=>{const e=$('c'+k);if(e)e.className='pray '+(k===x.k?'active':'')});if(!sim){const s=state(n);processBeep(s,n);render(s,n)}}
 window.loadPrayerLocation=function(){const g=C.g,d=new Date(),ds=pad(d.getDate())+'-'+pad(d.getMonth()+1)+'-'+d.getFullYear();$('status').innerHTML='Mengambil jadwal lokasi...';const url='https://api.aladhan.com/v1/timings/'+ds+'?latitude='+encodeURIComponent(g.lat)+'&longitude='+encodeURIComponent(g.lon)+'&method='+encodeURIComponent(g.method)+'&school=0&timezonestring='+encodeURIComponent(g.zone),x=new XMLHttpRequest();x.open('GET',url,true);x.timeout=12000;x.onreadystatechange=function(){if(x.readyState!==4)return;if(x.status>=200&&x.status<300){try{const data=JSON.parse(x.responseText).data.timings;ALL.forEach(k=>{const m=String(data[k]||'').match(/\d{1,2}:\d{2}/);if(m)C.base[k]=m[0].padStart(5,'0')});save();apply();forms();$('status').innerHTML='Jadwal lokasi berhasil diperbarui.'}catch(e){$('status').innerHTML='Data jadwal tidak dapat dibaca.'}}else $('status').innerHTML='Gagal mengambil jadwal; jadwal lama tetap dipakai.'};x.send()};
 function card(v){return'<div class="card">'+v+'</div>'}function inp(l,i,v,t,e){return'<label>'+l+'</label><input type="'+(t||'text')+'" id="'+i+'" value="'+String(v).replace(/"/g,'&quot;')+'" '+(e||'')+'>'}function sel(l,i,A,v){return'<label>'+l+'</label><select id="'+i+'">'+A.map(x=>'<option'+(x===v?' selected':'')+'>'+x+'</option>').join('')+'</select>'}function correctionControl(key,value){return'<label>Koreksi Menit</label><div class="correction-control"><button type="button" onclick="stepCorrection(\''+key+'\',-1)">−</button><input type="number" step="1" id="c'+key+'" value="'+value+'"><button type="button" onclick="stepCorrection(\''+key+'\',1)">+</button></div>'}window.stepCorrection=function(key,delta){const input=$('c'+key);input.value=Number(input.value||0)+delta;C.corr[key]=Number(input.value);T[key]=add(C.base[key],C.corr[key]);const schedule=$('c'+key);if(schedule){const value=schedule.querySelector('b');if(value)value.innerHTML=T[key]}};
-function forms(){const g=C.g,a=C.admin;$('p0').innerHTML=card(inp('Nama Masjid','gName',g.name)+inp('Nama Lokasi','gLoc',g.loc)+inp('Latitude','gLat',g.lat,'number')+inp('Longitude','gLon',g.lon,'number')+inp('Timezone','gZone',g.zone))+card(sel('Mode Jadwal','gMode',['MANUAL','AUTO'],g.mode)+inp('Metode Hisab','gMethod',g.method,'number')+inp('Koreksi Hijriah','gHijri',g.hijri,'number')+inp('Nama File Logo','gLogo',g.logo)+'<label>Upload Logo JPG/PNG</label><input type="file" id="gLogoFile" accept="image/png,image/jpeg,image/webp" onchange="handleLogoFile(this)"><button onclick="clearUploadedLogo()">HAPUS LOGO UPLOAD</button>')+card(inp('Font Lokasi','gLF',g.locFont)+inp('Ukuran Lokasi','gLS',g.locSize,'number')+inp('Warna Lokasi','gLC',g.locColor,'color'));let h='';ALL.forEach(k=>h+=card('<h3>'+L[k]+'</h3>'+inp('Waktu Dasar','b'+k,C.base[k])+correctionControl(k,C.corr[k])));$('p1').innerHTML=h;$('p2').innerHTML=card(sel('Font Utama','gFont',['Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Courier New'],g.font)+inp('Ukuran Running Text','gTS',g.tickerSize,'number')+inp('Warna Header','gHeader',g.header,'color')+inp('Warna Nama Masjid & Jam Jadwal','gBrand',g.brand,'color')+inp('Warna Jam Header','gClock',g.clock,'color')+inp('Warna Running Text','gTickerColor',g.tickerColor,'color')+inp('Warna Kotak Jadwal','gSchedule',g.schedule,'color'))+card('<label>Running Text Normal</label><textarea id="gTicker">'+g.ticker+'</textarea><label>Running Text Saat Menunggu Iqamah</label><textarea id="gIqTicker">'+g.iqamahTicker+'</textarea>')+card(sel('Beep Aktif','gBeep',['YA','TIDAK'],g.beepEnabled?'YA':'TIDAK')+inp('Beep Sebelum Adzan (detik)','gBeepBefore',g.beepBefore,'number')+inp('Frekuensi Beep','gBeepFreq',g.beepFreq,'number')+inp('Durasi Beep','gBeepDuration',g.beepDuration,'number')+inp('Volume Beep','gBeepVolume',g.beepVolume,'number'));$('p3').innerHTML=card('<label>Daftar Gambar</label><textarea id="gSlides">'+g.slides+'</textarea>'+inp('Interval','gSec',g.seconds,'number'));$('p4').innerHTML=card('<p>Petugas yang tampil hanya untuk shalat berikutnya.</p>');h='';DAILY.forEach(k=>{const p=C.daily[k];h+=card('<h3>'+L[k]+'</h3>'+inp('Imam','i'+k,p.imam)+inp('Menjelang Adzan','pre'+k,p.pre,'number')+inp('Iqamah','iq'+k,p.iqamah,'number')+inp('Durasi Shalat','pr'+k,p.prayer,'number')+inp('Rawatib','rw'+k,p.rawatib,'number'))});$('p5').innerHTML=h;const f=C.fri;$('p6').innerHTML=card(inp('Waktu Adzan 1','fFirst',f.first)+inp('Menjelang','fPre',f.pre,'number')+inp('Durasi Adzan 1','fA1',f.a1,'number')+inp('Jeda Adzan 2','fWait',f.wait,'number')+inp('Durasi Adzan 2','fA2',f.a2,'number')+inp('Khutbah','fKh',f.khutbah,'number')+inp('Shalat','fPr',f.prayer,'number')+inp('Rawatib','fRw',f.rawatib,'number')+inp('Khatib','fKhatib',f.khatib)+inp('Imam','fImam',f.imam)+inp('Bilal','fBilal',f.bilal));$('p7').innerHTML=card(inp('Nama PHBI','phName',C.phbi.name)+inp('Tanggal PHBI','phDate',C.phbi.date,'date')+'<label>Keterangan</label><textarea id="phNote">'+C.phbi.note+'</textarea>');const end=+C.cash.opening+(+C.cash.income)-(+C.cash.expense);$('p8').innerHTML=card(inp('Periode Kas','cashPeriod',C.cash.period)+inp('Saldo Awal','cashOpening',C.cash.opening,'number')+inp('Pemasukan','cashIncome',C.cash.income,'number')+inp('Pengeluaran','cashExpense',C.cash.expense,'number')+inp('Saldo Akhir','cashBalance',rupiah(end),'text','readonly'));$('p9').innerHTML=card(sel('Mode Admin','aMode',['AUTO','HP','TV'],a.mode)+inp('Lebar Panel','aWidth',a.width,'number')+inp('Kolom','aCols',a.cols,'number'))+card(inp('Judul','aTitle',a.title,'number')+inp('Label','aLabel',a.label,'number')+inp('Input','aInput',a.input,'number')+inp('Tombol','aButton',a.button,'number'))}
-window.handleLogoFile=function(input){const file=input.files&&input.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(){pendingLogoData=reader.result;$('status').innerHTML='Logo siap. Tekan SIMPAN SEMUA.'};reader.readAsDataURL(file)};window.clearUploadedLogo=function(){pendingLogoData='';C.g.logoData='';$('status').innerHTML='Logo upload dihapus. Tekan SIMPAN SEMUA.'};
+function forms(){const g=C.g,a=C.admin;$('p0').innerHTML=card(inp('Nama Masjid','gName',g.name)+inp('Nama Lokasi','gLoc',g.loc)+inp('Latitude','gLat',g.lat,'number')+inp('Longitude','gLon',g.lon,'number')+inp('Timezone','gZone',g.zone))+card(sel('Mode Jadwal','gMode',['MANUAL','AUTO'],g.mode)+inp('Metode Hisab','gMethod',g.method,'number')+inp('Koreksi Hijriah','gHijri',g.hijri,'number')+inp('Nama File Logo','gLogo',g.logo))+card(inp('Font Lokasi','gLF',g.locFont)+inp('Ukuran Lokasi','gLS',g.locSize,'number')+inp('Warna Lokasi','gLC',g.locColor,'color'));let h='';ALL.forEach(k=>h+=card('<h3>'+L[k]+'</h3>'+inp('Waktu Dasar','b'+k,C.base[k])+correctionControl(k,C.corr[k])));$('p1').innerHTML=h;$('p2').innerHTML=card(sel('Font Utama','gFont',['Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Courier New'],g.font)+inp('Ukuran Running Text','gTS',g.tickerSize,'number')+inp('Warna Header','gHeader',g.header,'color')+inp('Warna Nama Masjid & Jam Jadwal','gBrand',g.brand,'color')+inp('Warna Jam Header','gClock',g.clock,'color')+inp('Warna Running Text','gTickerColor',g.tickerColor,'color')+inp('Warna Kotak Jadwal','gSchedule',g.schedule,'color'))+card('<label>Running Text Normal</label><textarea id="gTicker">'+g.ticker+'</textarea><label>Running Text Saat Menunggu Iqamah</label><textarea id="gIqTicker">'+g.iqamahTicker+'</textarea>')+card(sel('Beep Aktif','gBeep',['YA','TIDAK'],g.beepEnabled?'YA':'TIDAK')+inp('Beep Sebelum Adzan (detik)','gBeepBefore',g.beepBefore,'number')+inp('Frekuensi Beep','gBeepFreq',g.beepFreq,'number')+inp('Durasi Beep','gBeepDuration',g.beepDuration,'number')+inp('Volume Beep','gBeepVolume',g.beepVolume,'number'));$('p3').innerHTML=card('<label>Daftar Gambar</label><textarea id="gSlides">'+g.slides+'</textarea>'+inp('Interval','gSec',g.seconds,'number'));$('p4').innerHTML=card('<p>Petugas yang tampil hanya untuk shalat berikutnya.</p>');h='';DAILY.forEach(k=>{const p=C.daily[k];h+=card('<h3>'+L[k]+'</h3>'+inp('Imam','i'+k,p.imam)+inp('Menjelang Adzan','pre'+k,p.pre,'number')+inp('Iqamah','iq'+k,p.iqamah,'number')+inp('Durasi Shalat','pr'+k,p.prayer,'number')+inp('Rawatib','rw'+k,p.rawatib,'number'))});$('p5').innerHTML=h;const f=C.fri;$('p6').innerHTML=card(inp('Waktu Adzan 1','fFirst',f.first)+inp('Menjelang','fPre',f.pre,'number')+inp('Durasi Adzan 1','fA1',f.a1,'number')+inp('Jeda Adzan 2','fWait',f.wait,'number')+inp('Durasi Adzan 2','fA2',f.a2,'number')+inp('Khutbah','fKh',f.khutbah,'number')+inp('Shalat','fPr',f.prayer,'number')+inp('Rawatib','fRw',f.rawatib,'number')+inp('Khatib','fKhatib',f.khatib)+inp('Imam','fImam',f.imam)+inp('Bilal','fBilal',f.bilal));$('p7').innerHTML=card(inp('Nama PHBI','phName',C.phbi.name)+inp('Tanggal PHBI','phDate',C.phbi.date,'date')+'<label>Keterangan</label><textarea id="phNote">'+C.phbi.note+'</textarea>');const end=+C.cash.opening+(+C.cash.income)-(+C.cash.expense);$('p8').innerHTML=card(inp('Periode Kas','cashPeriod',C.cash.period)+inp('Saldo Awal','cashOpening',C.cash.opening,'number')+inp('Pemasukan','cashIncome',C.cash.income,'number')+inp('Pengeluaran','cashExpense',C.cash.expense,'number')+inp('Saldo Akhir','cashBalance',rupiah(end),'text','readonly'));$('p9').innerHTML=card(sel('Mode Admin','aMode',['AUTO','HP','TV'],a.mode)+inp('Lebar Panel','aWidth',a.width,'number')+inp('Kolom','aCols',a.cols,'number'))+card(inp('Judul','aTitle',a.title,'number')+inp('Label','aLabel',a.label,'number')+inp('Input','aInput',a.input,'number')+inp('Tombol','aButton',a.button,'number'))}
 window.openSettings=function(){forms();$('panel').className='panel show'};window.closeSettings=function(){$('panel').className='panel'};window.tab=function(n,b){document.querySelectorAll('.page').forEach(e=>e.className='page');document.querySelectorAll('.tabs button').forEach(e=>e.className='');document.querySelectorAll('.page')[n].className='page on';b.className='on'};
 window.saveSettings=function(){const g=C.g,a=C.admin,f=C.fri;g.name=$('gName').value;g.loc=$('gLoc').value;g.lat=+$('gLat').value;g.lon=+$('gLon').value;g.zone=$('gZone').value;g.mode=$('gMode').value;g.method=+$('gMethod').value;g.hijri=+$('gHijri').value;g.logo=$('gLogo').value;if(pendingLogoData)g.logoData=pendingLogoData;g.locFont=$('gLF').value;g.locSize=+$('gLS').value;g.locColor=$('gLC').value;g.font=$('gFont').value;g.tickerSize=+$('gTS').value;g.header=$('gHeader').value;g.brand=$('gBrand').value;g.clock=$('gClock').value;g.tickerColor=$('gTickerColor').value;g.schedule=$('gSchedule').value;g.ticker=$('gTicker').value;g.iqamahTicker=$('gIqTicker').value;g.beepEnabled=$('gBeep').value==='YA';g.beepBefore=+$('gBeepBefore').value;g.beepFreq=+$('gBeepFreq').value;g.beepDuration=+$('gBeepDuration').value;g.beepVolume=+$('gBeepVolume').value;g.slides=$('gSlides').value;g.seconds=+$('gSec').value;ALL.forEach(k=>{C.base[k]=$('b'+k).value;C.corr[k]=Number($('c'+k).value||0)});DAILY.forEach(k=>C.daily[k]={imam:$('i'+k).value,pre:+$('pre'+k).value,iqamah:+$('iq'+k).value,prayer:+$('pr'+k).value,rawatib:+$('rw'+k).value});f.first=$('fFirst').value;f.pre=+$('fPre').value;f.a1=+$('fA1').value;f.wait=+$('fWait').value;f.a2=+$('fA2').value;f.khutbah=+$('fKh').value;f.prayer=+$('fPr').value;f.rawatib=+$('fRw').value;f.khatib=$('fKhatib').value;f.imam=$('fImam').value;f.bilal=$('fBilal').value;C.phbi.name=$('phName').value;C.phbi.date=$('phDate').value;C.phbi.note=$('phNote').value;C.cash.period=$('cashPeriod').value;C.cash.opening=+$('cashOpening').value;C.cash.income=+$('cashIncome').value;C.cash.expense=+$('cashExpense').value;a.mode=$('aMode').value;a.width=+$('aWidth').value;a.cols=+$('aCols').value;a.title=+$('aTitle').value;a.label=+$('aLabel').value;a.input=+$('aInput').value;a.button=+$('aButton').value;save();apply();closeSettings()};
 window.testDaily=function(){
@@ -1000,8 +999,6 @@ function renderAgenda(list){
         return;
     }
 
-    var item = list[0];
-
     var el =
         document.getElementById(
             'agendaText'
@@ -1011,8 +1008,35 @@ function renderAgenda(list){
         return;
     }
 
-    var txt =
-        item.notes || '-';
+    var txt = '';
+
+    list.forEach(function(item){
+
+        var d = item.date || '';
+
+        if(d){
+            var p = d.split('-');
+
+            if(p.length === 3){
+
+                var bulan = [
+                    'Jan','Feb','Mar','Apr',
+                    'Mei','Jun','Jul','Agu',
+                    'Sep','Okt','Nov','Des'
+                ];
+
+                d =
+                    p[2] + '-' +
+                    bulan[parseInt(p[1],10)-1] +
+                    '-' + p[0];
+            }
+        }
+
+        txt +=
+            '<b>' + d + '</b><br>' +
+            (item.notes || '-') +
+            '<br><br>';
+    });
 
     el.innerHTML = txt;
 
@@ -1040,7 +1064,7 @@ function renderAgenda(list){
         if(textHeight > boxHeight){
 
             var chars =
-                txt.length;
+                txt.replace(/<[^>]*>/g,'').length;
 
             //
             // semakin panjang teks
@@ -1060,7 +1084,6 @@ function renderAgenda(list){
             el.classList.add(
                 'agenda-scroll-run'
             );
-
         }
 
     },200);
