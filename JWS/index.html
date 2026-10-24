@@ -309,7 +309,7 @@ function beepOnce(freq,duration){
   }
   const osc=audioCtx.createOscillator();
   const gain=audioCtx.createGain();
-  osc.type='square';
+  osc.type='sawtooth';
   osc.frequency.value=freq;
   osc.connect(gain);
   gain.connect(audioCtx.destination);
