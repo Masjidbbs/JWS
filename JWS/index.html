@@ -540,14 +540,10 @@ if(n>=p.re)
     const pe=new Date(iq.getTime()+c.prayer*60000);
     const re=new Date(pe.getTime()+c.rawatib*60000);
 
-if(n >= pre && n < iq)
-  return {k,m:'pre',e:iq};
-
-if(n >= iq && n < pe)
-  return {k,m:'pr',e:pe};
-
-if(n >= pe && n < re)
-  return {k,m:'rw',e:re};
+if(n < pre) return {k,m:'wait',e:pre};
+if(n < iq)  return {k,m:'pre',e:iq};
+if(n < pe)  return {k,m:'pr',e:pe};
+if(n < re)  return {k,m:'rw',e:re};
   }
   console.log('STATE NULL',n,'JUMAT FINISH');
   return null;
@@ -772,7 +768,7 @@ if(s.m==='done'){
 
   else if(s.m==='rw'){
     setP(
-      'RAWATIB BADIYAH',
+      'RAWATIB',
       namaSholat(s.k),
       r,
       im,
@@ -936,7 +932,7 @@ function openSettings(){
   document.getElementById('panel')
     .classList.toggle('show');
 }
-const VERSION='v2026.10.25-02';
+const VERSION='v2026.10.25-01';
 window.addEventListener('load',()=>{
   $('version').textContent=VERSION;
 });
