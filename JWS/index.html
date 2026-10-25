@@ -348,12 +348,12 @@ function beepPattern(count=3,interval=300,freq=1000,duration=120){
 console.log('BEEP BLOCK LOADED');
 window.beepWarning=function(){
   beepOnce(2100,60);
-  setTimeout(()=>beepOnce(2100,60),120);
-  setTimeout(()=>beepOnce(2100,60),240);
+  setTimeout(()=>beepOnce(2100,60),160);
+  //setTimeout(()=>beepOnce(2100,60),240);
 };
 window.beepSholat=function(){
   console.log('SHOLAT BEEP EXECUTED');
-  beepOnce(800,900);
+  beepOnce(800,600);
 };
 //audio unloc
 function keepAudioAlive(){
@@ -527,34 +527,45 @@ if(n>=p.re)
   return {m:'done',k:'JUMAT',e:n};
   }
 
-  for(const k of DAILY){
+for(const k of DAILY){
 
-    if(n.getDay()===5 && k==='Dhuhr')
-      continue;
+  if(n.getDay()===5 && k==='Dhuhr')
+    continue;
 
-    const c=C.daily[k];
+  const c=C.daily[k];
 
-    const pr=at(n,T[k]);
-    const pre=new Date(pr-c.pre*60000);
-    const iq=new Date(pr.getTime()+c.iqamah*60000);
-    const pe=new Date(iq.getTime()+c.prayer*60000);
-    const re=new Date(pe.getTime()+c.rawatib*60000);
+  const pr=at(n,T[k]);
+  const pre=new Date(pr-c.pre*60000);
+  const iq=new Date(pr.getTime()+c.iqamah*60000);
+  const pe=new Date(iq.getTime()+c.prayer*60000);
+  const re=new Date(pe.getTime()+c.rawatib*60000);
 
-if(n < pre) return {k,m:'wait',e:pre};
-if(n < iq)  return {k,m:'pre',e:iq};
-if(n < pe)  return {k,m:'pr',e:pe};
-if(n < re)  return {k,m:'rw',e:re};	 }
-  console.log('STATE NULL',n,'JUMAT FINISH');
-  return null;
+  if(n >= pre && n < pr)
+    return {k,m:'pre',e:pr};
+
+  if(n >= pr && n < iq)
+    return {k,m:'iq',e:iq};
+
+  if(n >= iq && n < pe)
+    return {k,m:'pr',e:pe};
+
+  if(n >= pe && n < re)
+    return {k,m:'rw',e:re};
 }
 
+return null;
+}
 function processBeep(s,n){
   const key=s?s.m+':'+(s.k||''):'';
-
   if(s){
     const remain=Math.ceil((s.e-n)/1000);
     console.log('MODE=',s.m,'REMAIN=',remain);
-
+console.log(
+  'STATE CHANGE',
+  previousState,
+  '=>',
+  key
+);
     // Warning 5 detik sebelum masuk waktu sholat
     if((s.m==='pre'||s.m==='fpre')&&remain<=5&&remain>0){
       const mark='warning:'+key+':'+remain+':'+n.toDateString();
@@ -563,7 +574,6 @@ function processBeep(s,n){
         beepWarning();
       }
     }
-
     // Warning 5 detik sebelum masuk mode sholat
     if(s.m==='iq'&&remain<=5&&remain>0){
       const mark='iqwarning:'+key+':'+remain+':'+n.toDateString();
@@ -572,15 +582,12 @@ function processBeep(s,n){
         beepWarning();
       }
     }
-
-    // TOOOT saat masuk waktu sholat (pre -> iq)
-    if(previousState.indexOf('pre:')===0&&s.m==='iq'){
-      console.log('TRIGGER SHOLAT');
-      beepSholat();
-    }
-  }
-
-  // TOOOT saat masuk adzan Jumat
+ // TOOOT saat masuk waktu sholat harian
+if(previousState.indexOf('pre:')===0 && s.m==='iq'){
+  console.log('TRIGGER SHOLAT HARIAN');
+  beepSholat();
+}
+// TOOOT saat masuk adzan Jumat
 if(previousState.indexOf('fpre:')===0 && s.m==='fadzan'){
   console.log('TRIGGER ADZAN JUMAT');
   beepSholat();
@@ -895,6 +902,9 @@ if(!s){
 
   processBeep(s,n);
   render(s,n);
+  if(audioCtx){
+  console.log('AUDIO=',audioCtx.state);
+}
 }
 window.loadPrayerLocation=function(){const g=C.g,d=new Date(),ds=pad(d.getDate())+'-'+pad(d.getMonth()+1)+'-'+d.getFullYear();$('status').innerHTML='Mengambil jadwal lokasi...';const url='https://api.aladhan.com/v1/timings/'+ds+'?latitude='+encodeURIComponent(g.lat)+'&longitude='+encodeURIComponent(g.lon)+'&method='+encodeURIComponent(g.method)+'&school=0&timezonestring='+encodeURIComponent(g.zone),x=new XMLHttpRequest();x.open('GET',url,true);x.timeout=12000;x.onreadystatechange=function(){if(x.readyState!==4)return;if(x.status>=200&&x.status<300){try{const data=JSON.parse(x.responseText).data.timings;ALL.forEach(k=>{const m=String(data[k]||'').match(/\d{1,2}:\d{2}/);if(m)C.base[k]=m[0].padStart(5,'0')});save();apply();forms();$('status').innerHTML='Jadwal lokasi berhasil diperbarui.'}catch(e){$('status').innerHTML='Data jadwal tidak dapat dibaca.'}}else $('status').innerHTML='Gagal mengambil jadwal; jadwal lama tetap dipakai.'};x.send()};
 function card(v){return'<div class="card">'+v+'</div>'}function inp(l,i,v,t,e){return'<label>'+l+'</label><input type="'+(t||'text')+'" id="'+i+'" value="'+String(v).replace(/"/g,'&quot;')+'" '+(e||'')+'>'}function sel(l,i,A,v){return'<label>'+l+'</label><select id="'+i+'">'+A.map(x=>'<option'+(x===v?' selected':'')+'>'+x+'</option>').join('')+'</select>'}function correctionControl(key,value){return'<label>Koreksi Menit</label><div class="correction-control"><button type="button" onclick="stepCorrection(\''+key+'\',-1)">−</button><input type="number" step="1" id="c'+key+'" value="'+value+'"><button type="button" onclick="stepCorrection(\''+key+'\',1)">+</button></div>'}window.stepCorrection=function(key,delta){const input=$('c'+key);input.value=Number(input.value||0)+delta;C.corr[key]=Number(input.value);T[key]=add(C.base[key],C.corr[key]);const schedule=$('c'+key);if(schedule){const value=schedule.querySelector('b');if(value)value.innerHTML=T[key]}};
@@ -943,7 +953,7 @@ function openSettings(){
   document.getElementById('panel')
     .classList.toggle('show');
 }
-const VERSION='v2026.10.25-01';
+const VERSION='v2026.10.25-05';
 window.addEventListener('load',()=>{
   $('version').textContent=VERSION;
 });
