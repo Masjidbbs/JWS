@@ -290,8 +290,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
 (function(){'use strict';
 const ALL=['Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],SHOW=['Imsak','Fajr','Dhuhr','Asr','Maghrib','Isha'],DAILY=['Fajr','Dhuhr','Asr','Maghrib','Isha'],L={Imsak:'IMSAK',Fajr:'SHUBUH',Sunrise:'SYURUQ',Dhuhr:'DZUHUR',Asr:'ASHAR',Maghrib:'MAGHRIB',Isha:'ISYA'};
 function namaSholat(k){
-  console.log('namaSholat masuk =',k);
-  console.log('hasil =',L[k]);
+  //console.log('namaSholat masuk =',k);
+  //console.log('hasil =',L[k]);
   if(k==='Dhuhr' && new Date().getDay()===5){
     return 'JUMAT';
   }
@@ -457,14 +457,39 @@ function slides(){if(slideTimer)clearInterval(slideTimer);document.querySelector
 };let n=0;A[0].className='slide on';$('placeholder').style.display='none';slideTimer=setInterval(()=>{A[n].className='slide';n=(n+1)%A.length;A[n].className='slide on'},Math.max(3,+C.g.seconds)*1000)}
 function fplan(n){
   if(n.getDay()!==5) return null;
+
   const f=C.fri;
-  const adzan=(+f.a1||0)+(+f.a2||0);
+
+  const a1=+f.a1||0;
+  const a2=+f.a2||0;
+  const khutbah=+f.khutbah||0;
+  const prayer=+f.prayer||0;
+  const rawatib=+f.rawatib||0;
+
   const start=at(n,T.Dhuhr);
+
   const pre=new Date(start.getTime()-60000);
-  const ae=new Date(start.getTime()+adzan*60000);
-  const ke=new Date(ae.getTime()+f.khutbah*60000);
-  const pe=new Date(ke.getTime()+f.prayer*60000);
-  const re=new Date(pe.getTime()+f.rawatib*60000);
+
+  // akhir fase adzan
+  const ae=new Date(
+    start.getTime()+(a1+a2)*60000
+  );
+
+  // akhir fase khutbah
+  const ke=new Date(
+    ae.getTime()+khutbah*60000
+  );
+
+  // akhir fase sholat
+  const pe=new Date(
+    ke.getTime()+prayer*60000
+  );
+
+  // akhir fase rawatib
+  const re=new Date(
+    pe.getTime()+rawatib*60000
+  );
+
   return{
     pre,
     adzan:start,
@@ -474,15 +499,63 @@ function fplan(n){
     re
   };
 }
-	  function state(n){const p=fplan(n);
-if(p){
-  if(n>=p.pre&&n<p.adzan)return{m:'fpre',e:p.adzan};
-  if(n>=p.adzan&&n<p.ae)return{m:'fadzan',e:p.ae};
-  if(n>=p.ae&&n<p.ke)return{m:'kh',e:p.ke};
-  if(n>=p.ke&&n<p.pe)return{m:'fp',e:p.pe};
-  if(n>=p.pe&&n<p.re)return{m:'fr',e:p.re};
+function state(n){
+  const p=fplan(n);
+
+  if(p){
+    if(n>=p.pre&&n<p.adzan)
+      return {m:'fpre',k:'JUMAT',e:p.adzan};
+
+    // ADZAN
+    if(n>=p.adzan&&n<p.ae)
+      return {m:'fadzan',k:'JUMAT',e:p.ke};
+
+    // KHUTBAH
+    if(n>=p.ae&&n<p.ke)
+      return {m:'kh',k:'JUMAT',e:p.ke};
+
+    // SHOLAT
+    if(n>=p.ke&&n<p.pe)
+      return {m:'fp',k:'JUMAT',e:p.pe};
+
+    // RAWATIB
+if(n>=p.pe&&n<p.re)
+  return {m:'fr',k:'JUMAT',e:p.re};
+
+// SELESAI JUMAT
+if(n>=p.re)
+  return {m:'done',k:'JUMAT',e:n};
+  }
+
+  for(const k of DAILY){
+
+    if(n.getDay()===5 && k==='Dhuhr')
+      continue;
+
+    const c=C.daily[k];
+
+    const pr=at(n,T[k]);
+    const pre=new Date(pr-c.pre*60000);
+    const iq=new Date(pr.getTime()+c.iqamah*60000);
+    const pe=new Date(iq.getTime()+c.prayer*60000);
+    const re=new Date(pe.getTime()+c.rawatib*60000);
+
+    if(n>=pre&&n<pr)
+      return {m:'pre',k:k,e:pr};
+
+    if(n>=pr&&n<iq)
+      return {m:'iq',k:k,e:iq};
+
+    if(n>=iq&&n<pe)
+      return {m:'pr',k:k,e:pe};
+
+    if(n>=pe&&n<re)
+      return {m:'rw',k:k,e:re};
+  }
+
+  console.log('STATE NULL',n,'JUMAT FINISH');
+  return null;
 }
-for(const k of DAILY){if(n.getDay()===5&&k==='Dhuhr')continue;const c=C.daily[k],pr=at(n,T[k]),pre=new Date(pr-c.pre*6e4),iq=new Date(pr.getTime()+c.iqamah*6e4),pe=new Date(iq.getTime()+c.prayer*6e4),re=new Date(pe.getTime()+c.rawatib*6e4);if(n>=pre&&n<pr)return{m:'pre',k,e:pr};if(n>=pr&&n<iq)return{m:'iq',k,e:iq};if(n>=iq&&n<pe)return{m:'pr',k,e:pe};if(n>=pe&&n<re)return{m:'rw',k,e:re}}return null}
 
 function processBeep(s,n){
   const key=s?s.m+':'+(s.k||''):'';
@@ -524,99 +597,303 @@ function processBeep(s,n){
 
   previousState=key;
 }
-function setP(t,p,c,who,note,show,flash,n,iqTicker){$('pt').innerHTML=t;$('pp').innerHTML=p;$('pc').innerHTML=c;$('people').innerHTML=who;$('note').innerHTML=note;$('pc').style.display=show?'block':'none';$('pt').className=flash&&n.getSeconds()%2===0?'phase-title flash':'phase-title';$('iqTickerWrap').className=iqTicker?'iqamah-ticker show':'iqamah-ticker'}function render(s,n){
+function setP(t,p,c,who,note,show,flash,n,iqTicker){
+
+  if(!(n instanceof Date)){
+    console.error('setP invalid date',n);
+    n=new Date();
+  }
+
+  $('pt').innerHTML=t;
+  $('pp').innerHTML=p;
+  $('pc').innerHTML=c;
+  $('people').innerHTML=who;
+  $('note').innerHTML=note;
+  $('pc').style.display=show?'block':'none';
+
+  $('pt').className=
+    flash && n.getSeconds()%2===0
+      ? 'phase-title flash'
+      : 'phase-title';
+
+  $('iqTickerWrap').className=
+    iqTicker
+      ? 'iqamah-ticker show'
+      : 'iqamah-ticker';
+}
+function render(s,n){
   console.log('s=',s);
   if(s) console.log('s.k=',s.k,'mode=',s.m);
   const o=$('overlay');
   if(!s){
-    o.className='overlay'};if(!s){o.className='overlay';$('iqTickerWrap').className='iqamah-ticker';return}o.className='overlay show';const f=C.fri,r=cd((s.e-n)/1000);if(s.m==='fpre')
-if(s.m==='fpre')
-  setP('SEBENTAR LAGI','ADZAN JUMAT',r,'KHATIB: '+f.khatib,'',true,true,n,false);
-else if(s.m==='fadzan')
-  setP('ADZAN','SHALAT JUMAT','','BILAL: '+f.bilal,'',false,false,n,false);
-else if(s.m==='kh')
-  setP('KHUTBAH','SHALAT JUMAT',r,'KHATIB: '+f.khatib,'',true,true,n,false);
-else if(s.m==='fp')
-  setP('SHALAT JUMAT','IMAM: '+f.imam,r,'','',true,true,n,false);
-else if(s.m==='fr')
-setP('RAWATIB','SHALAT JUMAT',r,'IMAM: '+f.imam,'',true,true,n,false);
-else{const im='IMAM: '+C.daily[s.k].imam;if(s.m==='pre')setP(
-  'SEBENTAR LAGI MASUK WAKTU',
-  namaSholat(s.k),
-  r,
-  im,
-  '',
-  true,
-  true,
-  n,
-  false
-);if(s.m==='iq'){
+    o.className='overlay';
+    $('iqTickerWrap').className='iqamah-ticker';
+    return;
+  }
+  o.className='overlay show';
+  o.style.display='flex';
+  o.style.opacity='1';
+  o.style.visibility='visible';
 
-  const totalIqamah =
-    C.daily[s.k].iqamah * 60;
+  const f=C.fri;
+  const r=cd((s.e-n)/1000);
 
-  const sisa =
-    Math.ceil(
-      (s.e - n) / 1000
+  // ======================
+  // MODE JUMAT
+  // ======================
+  if(s.m==='fpre'){
+    setP(
+      'SEBENTAR LAGI',
+      'ADZAN JUMAT',
+      r,
+      'KHATIB: '+f.khatib,
+      '',
+      true,
+      true,
+      n,
+      false
     );
+    return;
+  }
 
-  const sudahBerjalan =
-    totalIqamah - sisa;
+  if(s.m==='fadzan'){
+    setP(
+      'ADZAN JUMAT',
+      '',
+      r,
+      'BILAL/MUAZIN: '+f.bilal,
+      '',
+      true,
+      true,
+      n,
+      false
+    );
+    return;
+  }
 
-  const judul =
-    sudahBerjalan < 240
-    ? 'ADZAN '
-    : 'MENUNGGU IQAMAH';
+  if(s.m==='kh'){
+    setP(
+      'KHUTBAH JUMAT',
+      '',
+      r,
+      'KHATIB: '+f.khatib,
+      'Di mohon Untuk menjaga ketenangan selama khutbah berlangsung',
+      true,
+      true,
+      n,
+      false
+    );
+    return;
+  }
 
+if(s.m==='fp'){
   setP(
-    judul,
-    namaSholat(s.k),
-    r,
-    im,
+    'Sedang Berlangsung',
+    'SHALAT JUMAT',
+    '',
+    'IMAM: '+f.imam,
     '',
     true,
     true,
     n,
-    true
+    false
   );
+  return;
+}
+  if(s.m==='fr'){
+  setP(
+    'RAWATIB',
+    'SHALAT SUNAH',
+    r,
+    'BADIYAH JUMAT',
+    '',
+    true,
+    true,
+    n,
+    false
+  );
+  return;
+}
 
-};if(s.m==='pr')setP('SHALAT SEDANG BERLANGSUNG',namaSholat(s.k),'',im,'Mohon Menjaga Ketenangan',false,false,n,false);if(s.m==='rw')setP('SHALAT RAWATIB',namaSholat(s.k),r,im,'',true,false,n,false)}}
+if(s.m==='done'){
+  o.className='overlay';
+  o.style.display='none';
+  return;
+}
+
+  // ======================
+  // MODE HARIAN
+  // ======================
+
+  const im='IMAM: '+C.daily[s.k].imam;
+
+  if(s.m==='pre'){
+    setP(
+      'SEBENTAR LAGI MASUK WAKTU',
+      namaSholat(s.k),
+      r,
+      im,
+      '',
+      true,
+      true,
+      n,
+      false
+    );
+  }
+
+  else if(s.m==='iq'){
+
+    const totalIqamah=C.daily[s.k].iqamah*60;
+
+    const sisa=Math.ceil(
+      (s.e-n)/1000
+    );
+
+    const sudahBerjalan=
+      totalIqamah-sisa;
+
+    const judul=
+      sudahBerjalan<240
+      ? 'ADZAN'
+      : 'MENUNGGU IQAMAH';
+
+    setP(
+      judul,
+      namaSholat(s.k),
+      r,
+      im,
+      '',
+      true,
+      true,
+      n,
+      true
+    );
+  }
+
+  else if(s.m==='pr'){
+    setP(
+      'SHALAT BERJAMAAH',
+      namaSholat(s.k),
+      r,
+      im,
+      '',
+      true,
+      true,
+      n,
+      false
+    );
+  }
+
+  else if(s.m==='rw'){
+    setP(
+      'RAWATIB',
+      namaSholat(s.k),
+      r,
+      im,
+      '',
+      true,
+      true,
+      n,
+      false
+    );
+  }
+  }
+
 function next(n){const fp=fplan(n);if(fp&&n<fp.a1)return{k:'JUMAT',d:fp.a1};for(const k of DAILY){if(n.getDay()===5&&k==='Dhuhr')continue;const d=at(n,T[k]);if(d>n)return{k,d}}const p=T.Fajr.split(':');return{k:'Fajr',d:new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,+p[0],+p[1])}}
-function tick(){const n=new Date(),x=next(n),df=Math.max(0,Math.floor((x.d-n)/1000));$('headerClock').innerHTML=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());const D=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];const bulan = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember'
-];
+function tick(){
+  const n=new Date();
+  const x=next(n);
+  const df=Math.max(0,Math.floor((x.d-n)/1000));
 
-$('headerDate').innerHTML =
-  D[n.getDay()] + ', ' +
-  n.getDate() + ' ' +
-  bulan[n.getMonth()] + ' ' +
-  n.getFullYear() +
-  ' | ' +
-  hijri(n);
-//$('headerHijri').innerHTML =  //hijri(n);
-$('nextName').innerHTML=x.k==='JUMAT'?'JUMAT':namaSholat(x.k);$('nextCount').innerHTML=pad(Math.floor(df/3600))+':'+pad(Math.floor(df%3600/60))+':'+pad(df%60);
-  $('offLabel').innerHTML =
-  x.k==='JUMAT'
-  ? 'KHATIB :'
-  : 'IMAM :';
+  $('headerClock').innerHTML=
+    pad(n.getHours())+':'+
+    pad(n.getMinutes())+':'+
+    pad(n.getSeconds());
 
-$('offName').innerHTML =
-  x.k==='JUMAT'
-  ? C.fri.khatib
-  : (C.daily[x.k]
-      ? C.daily[x.k].imam
-      : '-');SHOW.forEach(k=>{const e=$('c'+k);if(e)e.className='pray '+(k===x.k?'active':'')});if(!sim){const s=state(n);processBeep(s,n);render(s,n)}}
+  const D=[
+    'Minggu',
+    'Senin',
+    'Selasa',
+    'Rabu',
+    'Kamis',
+    'Jumat',
+    'Sabtu'
+  ];
+
+  const bulan=[
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember'
+  ];
+
+  $('headerDate').innerHTML=
+    D[n.getDay()]+', '+
+    n.getDate()+' '+
+    bulan[n.getMonth()]+' '+
+    n.getFullYear()+
+    ' | '+
+    hijri(n);
+
+  $('nextName').innerHTML=
+    x.k==='JUMAT'
+      ? 'JUMAT'
+      : namaSholat(x.k);
+
+  $('nextCount').innerHTML=
+    pad(Math.floor(df/3600))+':' +
+    pad(Math.floor((df%3600)/60))+':' +
+    pad(df%60);
+
+  $('offLabel').innerHTML=
+    x.k==='JUMAT'
+      ? 'KHATIB :'
+      : 'IMAM :';
+
+  $('offName').innerHTML=
+    x.k==='JUMAT'
+      ? C.fri.khatib
+      : (
+          C.daily[x.k]
+            ? C.daily[x.k].imam
+            : '-'
+        );
+
+  SHOW.forEach(k=>{
+    const e=$('c'+k);
+    if(e){
+      e.className='pray '+(k===x.k?'active':'');
+    }
+  });
+
+  if(sim) return;
+
+  const s=state(n);
+
+  if(!s){
+    console.error('STATE NULL',n);
+    return;
+  }
+
+  if(!s.k){
+    console.error('STATE TANPA k',s);
+    s.k='JUMAT';
+  }
+
+  console.log('s=',s);
+  console.log('s.k=',s.k,'mode=',s.m);
+
+  processBeep(s,n);
+  render(s,n);
+}
 window.loadPrayerLocation=function(){const g=C.g,d=new Date(),ds=pad(d.getDate())+'-'+pad(d.getMonth()+1)+'-'+d.getFullYear();$('status').innerHTML='Mengambil jadwal lokasi...';const url='https://api.aladhan.com/v1/timings/'+ds+'?latitude='+encodeURIComponent(g.lat)+'&longitude='+encodeURIComponent(g.lon)+'&method='+encodeURIComponent(g.method)+'&school=0&timezonestring='+encodeURIComponent(g.zone),x=new XMLHttpRequest();x.open('GET',url,true);x.timeout=12000;x.onreadystatechange=function(){if(x.readyState!==4)return;if(x.status>=200&&x.status<300){try{const data=JSON.parse(x.responseText).data.timings;ALL.forEach(k=>{const m=String(data[k]||'').match(/\d{1,2}:\d{2}/);if(m)C.base[k]=m[0].padStart(5,'0')});save();apply();forms();$('status').innerHTML='Jadwal lokasi berhasil diperbarui.'}catch(e){$('status').innerHTML='Data jadwal tidak dapat dibaca.'}}else $('status').innerHTML='Gagal mengambil jadwal; jadwal lama tetap dipakai.'};x.send()};
 function card(v){return'<div class="card">'+v+'</div>'}function inp(l,i,v,t,e){return'<label>'+l+'</label><input type="'+(t||'text')+'" id="'+i+'" value="'+String(v).replace(/"/g,'&quot;')+'" '+(e||'')+'>'}function sel(l,i,A,v){return'<label>'+l+'</label><select id="'+i+'">'+A.map(x=>'<option'+(x===v?' selected':'')+'>'+x+'</option>').join('')+'</select>'}function correctionControl(key,value){return'<label>Koreksi Menit</label><div class="correction-control"><button type="button" onclick="stepCorrection(\''+key+'\',-1)">−</button><input type="number" step="1" id="c'+key+'" value="'+value+'"><button type="button" onclick="stepCorrection(\''+key+'\',1)">+</button></div>'}window.stepCorrection=function(key,delta){const input=$('c'+key);input.value=Number(input.value||0)+delta;C.corr[key]=Number(input.value);T[key]=add(C.base[key],C.corr[key]);const schedule=$('c'+key);if(schedule){const value=schedule.querySelector('b');if(value)value.innerHTML=T[key]}};
 function forms(){const g=C.g,a=C.admin;$('p0').innerHTML=card(inp('Nama Masjid','gName',g.name)+inp('Nama Lokasi','gLoc',g.loc)+inp('Latitude','gLat',g.lat,'number')+inp('Longitude','gLon',g.lon,'number')+inp('Timezone','gZone',g.zone))+card(sel('Mode Jadwal','gMode',['MANUAL','AUTO'],g.mode)+inp('Metode Hisab','gMethod',g.method,'number')+inp('Koreksi Hijriah','gHijri',g.hijri,'number')+inp('Nama File Logo','gLogo',g.logo))+card(inp('Font Lokasi','gLF',g.locFont)+inp('Ukuran Lokasi','gLS',g.locSize,'number')+inp('Warna Lokasi','gLC',g.locColor,'color'));let h='';ALL.forEach(k=>h+=card('<h3>'+namaSholat(k)+'</h3>'+inp('Waktu Dasar','b'+k,C.base[k])+correctionControl(k,C.corr[k])));$('p1').innerHTML=h;$('p2').innerHTML=card(sel('Font Utama','gFont',['Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Courier New'],g.font)+inp('Ukuran Running Text','gTS',g.tickerSize,'number')+inp('Warna Header','gHeader',g.header,'color')+inp('Warna Nama Masjid & Jam Jadwal','gBrand',g.brand,'color')+inp('Warna Jam Header','gClock',g.clock,'color')+inp('Warna Running Text','gTickerColor',g.tickerColor,'color')+inp('Warna Kotak Jadwal','gSchedule',g.schedule,'color'))+card('<label>Running Text Normal</label><textarea id="gTicker">'+g.ticker+'</textarea><label>Running Text Saat Menunggu Iqamah</label><textarea id="gIqTicker">'+g.iqamahTicker+'</textarea>')+card(sel('Beep Aktif','gBeep',['YA','TIDAK'],g.beepEnabled?'YA':'TIDAK')+inp('Beep Sebelum Adzan (detik)','gBeepBefore',g.beepBefore,'number')+inp('Frekuensi Beep','gBeepFreq',g.beepFreq,'number')+inp('Durasi Beep','gBeepDuration',g.beepDuration,'number')+inp('Volume Beep','gBeepVolume',g.beepVolume,'number'));$('p3').innerHTML=card('<label>Daftar Gambar</label><textarea id="gSlides">'+g.slides+'</textarea>'+inp('Interval','gSec',g.seconds,'number'));$('p4').innerHTML=card('<p>Petugas yang tampil hanya untuk shalat berikutnya.</p>');h='';DAILY.forEach(k=>{const p=C.daily[k];h+=card('<h3>'+namaSholat(k)+'</h3>'+inp('Imam','i'+k,p.imam)+inp('Menjelang Adzan','pre'+k,p.pre,'number')+inp('Iqamah','iq'+k,p.iqamah,'number')+inp('Durasi Shalat','pr'+k,p.prayer,'number')+inp('Rawatib','rw'+k,p.rawatib,'number'))});$('p5').innerHTML=h;const f=C.fri;$('p6').innerHTML=card(inp('Waktu Adzan 1','fFirst',f.first)+inp('Menjelang','fPre',f.pre,'number')+inp('Durasi Adzan 1','fA1',f.a1,'number')+inp('Jeda Adzan 2','fWait',f.wait,'number')+inp('Durasi Adzan 2','fA2',f.a2,'number')+inp('Khutbah','fKh',f.khutbah,'number')+inp('Shalat','fPr',f.prayer,'number')+inp('Rawatib','fRw',f.rawatib,'number')+inp('Khatib','fKhatib',f.khatib)+inp('Imam','fImam',f.imam)+inp('Bilal','fBilal',f.bilal));$('p7').innerHTML=card(inp('Nama PHBI','phName',C.phbi.name)+inp('Tanggal PHBI','phDate',C.phbi.date,'date')+'<label>Keterangan</label><textarea id="phNote">'+C.phbi.note+'</textarea>');const end=+C.cash.opening+(+C.cash.income)-(+C.cash.expense);$('p8').innerHTML=card(inp('Periode Kas','cashPeriod',C.cash.period)+inp('Saldo Awal','cashOpening',C.cash.opening,'number')+inp('Pemasukan','cashIncome',C.cash.income,'number')+inp('Pengeluaran','cashExpense',C.cash.expense,'number')+inp('Saldo Akhir','cashBalance',rupiah(end),'text','readonly'));$('p9').innerHTML=card(sel('Mode Admin','aMode',['AUTO','HP','TV'],a.mode)+inp('Lebar Panel','aWidth',a.width,'number')+inp('Kolom','aCols',a.cols,'number'))+card(inp('Judul','aTitle',a.title,'number')+inp('Label','aLabel',a.label,'number')+inp('Input','aInput',a.input,'number')+inp('Tombol','aButton',a.button,'number'))}
