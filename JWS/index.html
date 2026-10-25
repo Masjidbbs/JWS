@@ -540,19 +540,10 @@ if(n>=p.re)
     const pe=new Date(iq.getTime()+c.prayer*60000);
     const re=new Date(pe.getTime()+c.rawatib*60000);
 
-    if(n>=pre&&n<pr)
-      return {m:'pre',k:k,e:pr};
-
-    if(n>=pr&&n<iq)
-      return {m:'iq',k:k,e:iq};
-
-    if(n>=iq&&n<pe)
-      return {m:'pr',k:k,e:pe};
-
-    if(n>=pe&&n<re)
-      return {m:'rw',k:k,e:re};
-  }
-
+if(n < pre) return {k,m:'wait',e:pre};
+if(n < iq)  return {k,m:'pre',e:iq};
+if(n < pe)  return {k,m:'pr',e:pe};
+if(n < re)  return {k,m:'rw',e:re};	 }
   console.log('STATE NULL',n,'JUMAT FINISH');
   return null;
 }
@@ -797,7 +788,12 @@ if(s.m==='done'){
       false
     );
   }
-  }
+  else if(s.m==='done'){
+  o.className='overlay';
+  o.style.display='none';
+  return;
+}
+}
 
 function next(n){const fp=fplan(n);if(fp&&n<fp.a1)return{k:'JUMAT',d:fp.a1};for(const k of DAILY){if(n.getDay()===5&&k==='Dhuhr')continue;const d=at(n,T[k]);if(d>n)return{k,d}}const p=T.Fajr.split(':');return{k:'Fajr',d:new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,+p[0],+p[1])}}
 function tick(){
@@ -876,12 +872,13 @@ function tick(){
 
   if(sim) return;
 
-  const s=state(n);
-
-  if(!s){
-    console.error('STATE NULL',n);
-    return;
-  }
+const s=state(n);
+if(!s){
+  console.log('STATE NULL');
+  const o=$('overlay');
+  o.style.display='none';
+  return;
+}
 
   if(!s.k){
     console.error('STATE TANPA k',s);
