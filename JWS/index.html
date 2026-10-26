@@ -60,7 +60,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   width:42vw;
   text-align:right;
 }.header-hijri{font-size:1.2vw;line-height:1.05;margin-top:.25vh;color:#dceaff}
-.left{grid-column:1;grid-row:2/4;display:grid;grid-template-rows:repeat(6,1fr);gap:.75vh}.pray{width:82%}.pray{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:1vw;background:linear-gradient(145deg,var(--schedule-bg),#073b6b);box-shadow:inset 0 0 0 2px #2b7fc2}.pray span{font-size:1.15vw;font-weight:800}.pray b{font-size:2.6vw;color:var(--brand-color)}.pray.active{background:linear-gradient(145deg,#ff4d43,#bd1616)}
+.left{grid-column:1;grid-row:2/4;display:grid;grid-template-rows:repeat(6,1fr);gap:.75vh}.pray{width:82%}.pray{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:1vw;background:linear-gradient(145deg,var(--schedule-bg),#073b6b);box-shadow:inset 0 0 0 2px #2b7fc2}.pray span{font-size:1.15vw;font-weight:800}.pray b{font-size:2.6vw;color:var(--brand-color)}
+.pray.active{
+  background:linear-gradient(145deg,#ff4d43,#bd1616);
+  animation:activePrayerBlink 2.5s ease-in-out infinite;
+}
+
+.active{
+  color:#fff;
+  animation:activePrayerBlink 3s ease-in-out infinite;
+}
+
+@keyframes activePrayerBlink{
+  0%{
+    background:#c00;
+  }
+  50%{
+    background:transparent;
+  }
+  100%{
+    background:#c00;
+  }
+}
 .center{grid-column:2;grid-row:2;position:relative;overflow:hidden;background:#fff;border-radius:.3vw}.center{margin-left:-3.2vw;}.nextbar{margin-left:-3.2vw;}
 .slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}.slide.on{opacity:1}.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#1763a5;font-size:2vw;font-weight:900;text-align:center}
 .right{
@@ -201,6 +222,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   align-items:center;
   white-space:nowrap;
 }
+
 #version{
   position:absolute;
   right:10px;
