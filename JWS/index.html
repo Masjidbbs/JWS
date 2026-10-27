@@ -502,9 +502,9 @@ function beepPattern(count=3,interval=300,freq=1000,duration=120){
 }
 console.log('BEEP BLOCK LOADED');
 window.beepWarning=function(){
-  beepOnce(2100,60);
-  setTimeout(()=>beepOnce(2100,60),160);
-  //setTimeout(()=>beepOnce(2100,60),240);
+  beepOnce(2200,60);
+  setTimeout(()=>beepOnce(2200,60),140);
+  setTimeout(()=>beepOnce(2200,60),260);
 };
 window.beepSholat=function(){
   console.log('SHOLAT BEEP EXECUTED');
