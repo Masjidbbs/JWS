@@ -100,18 +100,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
 .slide.on{
   opacity:1;
 }
-#overlayText.overlay-show{
-  animation:overlayFromRight 3s ease-out forwards;
+
+#overlayText.overlay-out{
+  animation:overlayToRight 2s ease-in forwards;
 }
 
-@keyframes overlayFromRight{
+@keyframes overlayToRight{
   0%{
-    opacity:0;
-    transform:translate(calc(-50% + 400px),-50%);
-  }
-  100%{
     opacity:1;
     transform:translate(-50%,-50%);
+  }
+  100%{
+    opacity:0;
+    transform:translate(calc(-50% + 400px),-50%);
   }
 }
   .overlay-main{
@@ -161,32 +162,52 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   box-shadow:0 0 10px rgba(100,181,246,.25);
   overflow:hidden;
 }
-.info-box .right-title,
 .cash-box .right-title{
   background:rgba(33,150,243,.25);
-  color:#ffffff;
+  color:#fff;
   border-bottom:1px solid rgba(100,181,246,.55);
+  margin:0;
 }
-.info-box{
-  height:auto !important;
-  max-height:calc(100% - 20px);
-  margin-bottom:20px;
+..info-box,
+.cash-box{
+  min-height:0;
+  height:100%;
   box-sizing:border-box;
 }
 .right{
   grid-column:3;
   grid-row:2/4;
   background:#06243e;
-  display:grid;
-  grid-template-rows:
-      auto
-      32%
-     88%
-      0%;
+  display:flex !important;
+  flex-direction:column;
+  gap:6px;
+  padding:8px;
+  box-sizing:border-box;
   overflow:hidden;
-  }
+  min-height:0;
+}
+
+.right > .cash-box{
+  flex:none !important;
+  height:auto !important;
+}
+
+.right > .info-box:last-child{
+  flex:1 !important;
+  min-height:0 !important;
+  height:auto !important;
+  display:flex !important;
+  flex-direction:column;
+}
+
+.right > .info-box:last-child .agenda-frame{
+  flex:1 !important;
+  height:0 !important;
+  min-height:0 !important;
+  overflow:hidden;
+}
   .agenda-title{
-    font-size:24px;
+    font-size:20px;
     font-weight:700;
     color:#ffd54f;
     text-align:center;
@@ -232,6 +253,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
         transform:
             translateY(-100%);
     }
+}
+.info-box .right-title{
+  font-size:20px !important;
+  line-height:1.2;
+  white-space:nowrap;
+  padding:10px 8px;
+  text-align:center;
+}
+.overlay-hide{
+  opacity:0 !important;
+  transition:opacity 4.5s ease !important;
 }
 .right-title{padding:1vh;background:var(--schedule-bg);font-size:1.55vw;font-weight:900}.info-box{padding:1vh 1vw;border-bottom:2px solid var(--schedule-bg)}.info-box h3{font-size:1.45vw;margin-bottom:.6vh}.info-row{display:flex;justify-content:space-between;align-items:center;padding:.62vh 0;border-bottom:1px solid #ffffff22;font-size:1.12vw}.info-row b{font-size:1.3vw}.balance{font-size:1.9vw!important;color:#45ff74}.phbi-days{font-size:2.0vw;font-weight:900}.phbi-name{font-size:1.5vw;font-weight:900;margin-top:.7vh}.phbi-date{font-size:1vw;margin-top:.6vh;color:#dbeaff}
 .nextbar{grid-column:2;grid-row:3;display:grid;grid-template-columns:1fr auto;align-items:center;padding:0 1.2vw;background:#053c6f;font-size:1.65vw;font-weight:900}.nextbar b,.nextbar strong{color:var(--brand-color)}
@@ -330,16 +362,37 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   <aside id="left" class="left"></aside>
   <main id="slides" class="center"><div id="placeholder" class="placeholder">INFORMASI MASJID<br>SLIDESHOW / POSTER / AGENDA</div><div id="overlayText"></div></main>
    
-    <aside class="right">
-    <div class="right-title">KEUANGAN MASJID</div>
+<aside class="right">
 
-    <section class="info-box cash-box">
-      <h3 id="periode"></h3>
-      <div class="info-row"><span>Saldo Awal</span><b id="saldoAwal"></b></div>
-      <div class="info-row"><span>Pemasukan</span><b id="masuk"></b></div>
-      <div class="info-row"><span>Pengeluaran</span><b id="keluar"></b></div>
-      <div class="info-row"><span>Saldo Akhir</span><b id="saldoAkhir" class="balance"></b></div>
-    </section>
+  <section class="info-box cash-box">
+
+    <div class="right-title">
+      KEUANGAN MASJID
+    </div>
+
+    <h3 id="periode"></h3>
+
+    <div class="info-row">
+      <span>Saldo Awal</span>
+      <b id="saldoAwal"></b>
+    </div>
+
+    <div class="info-row">
+      <span>Pemasukan</span>
+      <b id="masuk"></b>
+    </div>
+
+    <div class="info-row">
+      <span>Pengeluaran</span>
+      <b id="keluar"></b>
+    </div>
+
+    <div class="info-row">
+      <span>Saldo Akhir</span>
+      <b id="saldoAkhir" class="balance"></b>
+    </div>
+
+  </section>
 
    <section class="phbi-box">
 
@@ -666,59 +719,60 @@ function renderInfo(info){
 }
 
 function playOverlay(){
-  if(overlayRunning||!overlayData.length)return;
+  if(overlayRunning || !overlayData.length) return;
 
-  const el=$('overlayText');
-  const data=overlayData.slice();
+  const el = $('overlayText');
+  const data = overlayData.slice();
 
-  overlayRunning=true;
-  lastOverlayAt=Date.now();
+  overlayRunning = true;
+  lastOverlayAt = Date.now();
 
   if(overlayWaitTimer){
     clearTimeout(overlayWaitTimer);
-    overlayWaitTimer=null;
+    overlayWaitTimer = null;
   }
 
-  let n=0;
+  let n = 0;
 
   function show(){
-    if(n>=data.length){
-      el.innerHTML='';
-      el.style.display='none';
-      overlayRunning=false;
+    if(n >= data.length){
+      el.innerHTML = '';
+      el.style.display = 'none';
+      el.classList.remove('overlay-show','overlay-hide');
+      overlayRunning = false;
 
-      const interval=30*60*1000;
-      const elapsed=Date.now()-lastOverlayAt;
-      const wait=Math.max(1000,interval-elapsed);
+      const interval = 30 * 60 * 1000;
+      const elapsed = Date.now() - lastOverlayAt;
+      const wait = Math.max(1000, interval - elapsed);
 
       console.log(
         'OVERLAY SELESAI, TAMPIL LAGI DALAM:',
-        Math.ceil(wait/60000),
+        Math.ceil(wait / 60000),
         'MENIT'
       );
 
-      overlayWaitTimer=setTimeout(()=>{
+      overlayWaitTimer = setTimeout(()=>{
         playOverlay();
-      },wait);
+      }, wait);
 
       return;
     }
 
-    const item=data[n];
+    const item = data[n];
 
-    if(item.tipe==='PHBI'){
-      el.innerHTML=
-        '<div class="overlay-phbi-title">PHBI</div>'+
-        '<div class="overlay-main">'+item.text+'</div>'+
+    if(item.tipe === 'PHBI'){
+      el.innerHTML =
+        '<div class="overlay-phbi-title">PHBI</div>' +
+        '<div class="overlay-main">' + item.text + '</div>' +
         (item.sumber
-          ?'<div class="overlay-source">'+item.sumber+'</div>'
-          :'');
+          ? '<div class="overlay-source">' + item.sumber + '</div>'
+          : '');
     }else{
-      el.innerHTML=
-        '<div class="overlay-main">'+item.text+'</div>'+
+      el.innerHTML =
+        '<div class="overlay-main">' + item.text + '</div>' +
         (item.sumber
-          ?'<div class="overlay-source">'+item.sumber+'</div>'
-          :'');
+          ? '<div class="overlay-source">' + item.sumber + '</div>'
+          : '');
     }
 
     showOverlayAnimated(el);
@@ -730,25 +784,65 @@ function playOverlay(){
       item.text
     );
 
-    const durasi=Math.max(
+    const durasi = Math.max(
       5,
-      Number(item.durasi)||15
+      Number(item.durasi) || 15
     );
 
-    infoTimer=setTimeout(()=>{
-      n++;
-      show();
-    },durasi*1000);
-  }
+    // Tampil sesuai durasi
+infoTimer=setTimeout(()=>{
 
+  // Keluar ke kiri
+  el.style.transition='opacity 4s ease-in, transform 4s ease-in';
+
+  // Pastikan browser membaca posisi tengah dahulu
+  void el.offsetWidth;
+
+  el.style.transform='translate(calc(-50% - 600px),-50%)';
+  el.style.opacity='0';
+
+  // Tunggu gerakan keluar selesai
+  setTimeout(()=>{
+
+    el.style.display='none';
+
+    // reset
+    el.style.transition='';
+    el.style.animation='';
+    el.style.transform='';
+    el.style.opacity='';
+
+    n++;
+
+    // Jeda 5 detik sebelum slide berikutnya
+    if(n<data.length){
+      infoTimer=setTimeout(()=>{
+        show();
+      },5000);
+    }else{
+      show();
+    }
+
+  },4000);
+
+},durasi*1000);
+  }
   console.log('OVERLAY PLAYLIST MULAI');
   show();
 }
+
 function showOverlayAnimated(el){
-  el.classList.remove('overlay-show');
-  void el.offsetWidth;
-  el.classList.add('overlay-show');
   el.style.display='block';
+
+  el.style.animation='none';
+  el.style.opacity='0';
+  el.style.transform='translate(calc(-50% + 400px),-50%)';
+
+  void el.offsetWidth;
+
+  el.style.transition='opacity 3s ease-out, transform 3s ease-out';
+  el.style.opacity='1';
+  el.style.transform='translate(-50%,-50%)';
 }
 function apply(){console.log("APPLY DIJALANKAN");const r=document.documentElement,g=C.g,a=C.admin;r.style.setProperty('--header-bg',g.header);r.style.setProperty('--brand-color',g.brand);r.style.setProperty('--clock-color',g.clock);r.style.setProperty('--ticker-color',g.tickerColor);r.style.setProperty('--schedule-bg',g.schedule);r.style.setProperty('--main-font',g.font);r.style.setProperty('--ticker-size',g.tickerSize+'vw');r.style.setProperty('--location-size',g.locSize+'vw');r.style.setProperty('--admin-title',a.title+'px');r.style.setProperty('--admin-label',a.label+'px');r.style.setProperty('--admin-input',a.input+'px');r.style.setProperty('--admin-button',a.button+'px');r.style.setProperty('--admin-width',a.width+'vw');r.style.setProperty('--admin-cols',a.mode==='HP'?1:(a.mode==='AUTO'&&innerWidth<900?1:a.cols));$('masjid').innerHTML=g.name;$('lokasi').innerHTML ='<img src="pin.png" class="loc-icon"> ' +
   C.g.loc;$('lokasi').style.fontFamily=g.locFont;$('lokasi').style.color=g.locColor;$('ticker').innerHTML=g.ticker;$('iqTicker').innerHTML=g.iqamahTicker;
