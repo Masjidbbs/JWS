@@ -100,7 +100,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
 .slide.on{
   opacity:1;
 }
-#overlayText{
+#overlayText.overlay-show{
+  animation:overlayFromRight 3s ease-out forwards;
+}
+
+@keyframes overlayFromRight{
+  0%{
+    opacity:0;
+    transform:translate(calc(-50% + 400px),-50%);
+  }
+  100%{
+    opacity:1;
+    transform:translate(-50%,-50%);
+  }
+}
   .overlay-main{
   color:#ffd700;
   font-size:clamp(26px,3vw,46px);
@@ -113,6 +126,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   font-weight:500;
   margin-top:10px;
 }
+  #overlayText{
   position:absolute;
   left:50%;
   top:50%;
@@ -124,13 +138,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   box-sizing:border-box;
   padding:18px 30px;
   background:rgba(0,0,0,.25);
-  color:#ffd700;
   text-align:center;
-  font-size:clamp(26px,3vw,46px);
-  font-weight:600;
-  line-height:1.45;
   border-radius:12px;
-  text-shadow:0 2px 4px rgba(0,0,0,.9);
   pointer-events:none;
 }
 .overlay-phbi-title{
@@ -517,26 +526,85 @@ function renderPHBI(){
   }
   console.log('PHBI FINAL:',C.phbi.overlay);
 }
+//
 
+ function renderNextPrayer(){
+  const T=C.base;
+  if(!T)return;
+
+  const now=new Date();
+
+  const prayers=[
+    ['SUBUH',T.Fajr],
+    ['DZUHUR',T.Dhuhr],
+    ['ASHAR',T.Asr],
+    ['MAGHRIB',T.Maghrib],
+    ['ISYA',T.Isha]
+  ];
+
+  let next=null;
+
+  for(const [name,time] of prayers){
+    if(!time)continue;
+
+    const p=time.split(':');
+    const t=new Date();
+    t.setHours(Number(p[0]),Number(p[1]),0,0);
+
+    if(t>now){
+      next={name,time,date:t};
+      break;
+    }
+  }
+
+  // Setelah Isya ? Subuh besok
+  if(!next&&T.Fajr){
+    const p=T.Fajr.split(':');
+    const t=new Date();
+    t.setDate(t.getDate()+1);
+    t.setHours(Number(p[0]),Number(p[1]),0,0);
+
+    next={
+      name:'SUBUH',
+      time:T.Fajr,
+      date:t
+    };
+  }
+
+  if(!next)return;
+
+  const diff=Math.max(0,next.date-now);
+  const h=Math.floor(diff/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+
+  $('phDays').innerHTML='SHALAT BERIKUTNYA';
+
+  $('phName').innerHTML=
+    next.name+
+    '<br>'+next.time;
+
+  $('phDate').innerHTML=
+    h>0
+      ?h+' JAM '+m+' MENIT LAGI'
+      :m+' MENIT LAGI';
+}
     //Render Text floating
 let infoTimer=null;
-let infoRun=0;
-let overlayInterval=null;
+let overlayWaitTimer=null;
+let overlayStarted=false;
+let overlayRunning=false;
+let lastOverlayAt=0;
 
 function renderInfo(info){
-  infoRun++;
-  const run=infoRun;
-
-  if(infoTimer)clearTimeout(infoTimer);
-  if(overlayInterval)clearInterval(overlayInterval);
-
   const el=$('overlayText');
   const data=[];
 
-  if(C.phbi && C.phbi.overlay){
+  // PHBI manual atau kalender
+  if(C.phbi&&C.phbi.overlay){
     data.push(C.phbi.overlay);
   }
 
+  // INFO dari API
   if(Array.isArray(info)){
     info.forEach(x=>{
       if(!x||!x.text)return;
@@ -551,81 +619,112 @@ function renderInfo(info){
     });
   }
 
-  if(!data.length){
+  overlayData=data;
+
+  console.log('PLAYLIST OVERLAY DIPERBARUI:',overlayData);
+
+  if(!overlayData.length){
+    if(infoTimer)clearTimeout(infoTimer);
+    if(overlayWaitTimer)clearTimeout(overlayWaitTimer);
+
+    overlayRunning=false;
+    overlayStarted=false;
     el.innerHTML='';
     el.style.display='none';
     return;
   }
 
-  function playOverlay(){
-    if(run!==infoRun)return;
+  // Hanya mulai otomatis satu kali ketika JWS pertama dibuka
+  if(!overlayStarted){
+    overlayStarted=true;
+    playOverlay();
+  }
+}
 
-    let n=0;
+function playOverlay(){
+  if(overlayRunning||!overlayData.length)return;
 
-    function show(){
-      if(run!==infoRun)return;
+  const el=$('overlayText');
+  const data=overlayData.slice();
 
-      if(n>=data.length){
-        el.innerHTML='';
-        el.style.display='none';
-        console.log('OVERLAY SELESAI');
-        return;
-      }
+  overlayRunning=true;
+  lastOverlayAt=Date.now();
 
-      const item=data[n];
-
-      if(item.tipe==='PHBI'){
-        el.innerHTML=
-          '<div class="overlay-phbi-title">PHBI</div>'+
-          '<div class="overlay-main">'+item.text+'</div>'+
-          (item.sumber
-            ?'<div class="overlay-source">'+item.sumber+'</div>'
-            :'');
-      }else{
-        el.innerHTML=
-          '<div class="overlay-main">'+item.text+'</div>'+
-          (item.sumber
-            ?'<div class="overlay-source">'+item.sumber+'</div>'
-            :'');
-      }
-
-      el.style.display='block';
-
-      console.log(
-        'OVERLAY:',
-        n,
-        item.tipe,
-        item.text
-      );
-
-      const durasi=Math.max(
-        5,
-        Number(item.durasi)||15
-      );
-
-      infoTimer=setTimeout(()=>{
-        if(run!==infoRun)return;
-
-        n++;
-        show();
-
-      },durasi*1000);
-    }
-
-    console.log('OVERLAY MULAI');
-    show();
+  if(overlayWaitTimer){
+    clearTimeout(overlayWaitTimer);
+    overlayWaitTimer=null;
   }
 
-  // tampil pertama kali setelah data API masuk
-  playOverlay();
+  let n=0;
 
-  // ulangi seluruh playlist setiap 30 menit
-  overlayInterval=setInterval(()=>{
-    if(run!==infoRun)return;
-    playOverlay();
-  },30*60*1000);
+  function show(){
+    if(n>=data.length){
+      el.innerHTML='';
+      el.style.display='none';
+      overlayRunning=false;
 
-  console.log('PLAYLIST OVERLAY:',data);
+      const interval=30*60*1000;
+      const elapsed=Date.now()-lastOverlayAt;
+      const wait=Math.max(1000,interval-elapsed);
+
+      console.log(
+        'OVERLAY SELESAI, TAMPIL LAGI DALAM:',
+        Math.ceil(wait/60000),
+        'MENIT'
+      );
+
+      overlayWaitTimer=setTimeout(()=>{
+        playOverlay();
+      },wait);
+
+      return;
+    }
+
+    const item=data[n];
+
+    if(item.tipe==='PHBI'){
+      el.innerHTML=
+        '<div class="overlay-phbi-title">PHBI</div>'+
+        '<div class="overlay-main">'+item.text+'</div>'+
+        (item.sumber
+          ?'<div class="overlay-source">'+item.sumber+'</div>'
+          :'');
+    }else{
+      el.innerHTML=
+        '<div class="overlay-main">'+item.text+'</div>'+
+        (item.sumber
+          ?'<div class="overlay-source">'+item.sumber+'</div>'
+          :'');
+    }
+
+    showOverlayAnimated(el);
+
+    console.log(
+      'OVERLAY:',
+      n,
+      item.tipe,
+      item.text
+    );
+
+    const durasi=Math.max(
+      5,
+      Number(item.durasi)||15
+    );
+
+    infoTimer=setTimeout(()=>{
+      n++;
+      show();
+    },durasi*1000);
+  }
+
+  console.log('OVERLAY PLAYLIST MULAI');
+  show();
+}
+function showOverlayAnimated(el){
+  el.classList.remove('overlay-show');
+  void el.offsetWidth;
+  el.classList.add('overlay-show');
+  el.style.display='block';
 }
 function apply(){console.log("APPLY DIJALANKAN");const r=document.documentElement,g=C.g,a=C.admin;r.style.setProperty('--header-bg',g.header);r.style.setProperty('--brand-color',g.brand);r.style.setProperty('--clock-color',g.clock);r.style.setProperty('--ticker-color',g.tickerColor);r.style.setProperty('--schedule-bg',g.schedule);r.style.setProperty('--main-font',g.font);r.style.setProperty('--ticker-size',g.tickerSize+'vw');r.style.setProperty('--location-size',g.locSize+'vw');r.style.setProperty('--admin-title',a.title+'px');r.style.setProperty('--admin-label',a.label+'px');r.style.setProperty('--admin-input',a.input+'px');r.style.setProperty('--admin-button',a.button+'px');r.style.setProperty('--admin-width',a.width+'vw');r.style.setProperty('--admin-cols',a.mode==='HP'?1:(a.mode==='AUTO'&&innerWidth<900?1:a.cols));$('masjid').innerHTML=g.name;$('lokasi').innerHTML ='<img src="pin.png" class="loc-icon"> ' +
   C.g.loc;$('lokasi').style.fontFamily=g.locFont;$('lokasi').style.color=g.locColor;$('ticker').innerHTML=g.ticker;$('iqTicker').innerHTML=g.iqamahTicker;
@@ -1552,7 +1651,10 @@ if(api.phbi && api.phbi.found){
 
 // HITUNG PHBI FINAL
 renderPHBI();
-
+console.log('STRUKTUR C:',C);
+console.log('STRUKTUR API:',api);
+renderNextPrayer();
+renderNextPrayer();
 // OVERLAY PHBI + INFO
 renderInfo(api.info||[]);
     //
