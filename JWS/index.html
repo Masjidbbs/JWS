@@ -149,6 +149,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   line-height:1.2;
   margin-bottom:10px;
 }
+.phbi-box{
+  display:none !important;
+}
+/* FRAME AGENDA & KAS */
+.info-box,
+.cash-box{
+  border:2px solid #64b5f6;
+  border-radius:12px;
+  background:rgba(33,150,243,.10);
+  box-shadow:0 0 10px rgba(100,181,246,.25);
+  overflow:hidden;
+}
+.info-box .right-title,
+.cash-box .right-title{
+  background:rgba(33,150,243,.25);
+  color:#ffffff;
+  border-bottom:1px solid rgba(100,181,246,.55);
+}
+.info-box{
+  height:auto !important;
+  max-height:calc(100% - 20px);
+  margin-bottom:20px;
+  box-sizing:border-box;
+}
 .right{
   grid-column:3;
   grid-row:2/4;
@@ -157,8 +181,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   grid-template-rows:
       auto
       32%
-      33%
-      35%;
+     88%
+      0%;
   overflow:hidden;
   }
   .agenda-title{
@@ -317,7 +341,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
       <div class="info-row"><span>Saldo Akhir</span><b id="saldoAkhir" class="balance"></b></div>
     </section>
 
-   <section class="info-box">
+   <section class="phbi-box">
 
     <div class="right-title">
         PHBI
@@ -1653,8 +1677,7 @@ if(api.phbi && api.phbi.found){
 renderPHBI();
 console.log('STRUKTUR C:',C);
 console.log('STRUKTUR API:',api);
-renderNextPrayer();
-renderNextPrayer();
+//renderNextPrayer();
 // OVERLAY PHBI + INFO
 renderInfo(api.info||[]);
     //
