@@ -750,7 +750,7 @@ function playOverlay(){
       el.classList.remove('overlay-show','overlay-hide');
       overlayRunning = false;
 
-      const interval = 30 * 60 * 1000;
+      const interval = 10 * 60 * 1000;
       const elapsed = Date.now() - lastOverlayAt;
       const wait = Math.max(1000, interval - elapsed);
 
