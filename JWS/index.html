@@ -461,8 +461,26 @@ function namaSholat(k){
   }
   return L[k];
 }
-const DEF={g:{name:'MASJID JAMIE BABUSSALAM',loc:'Cikampek, Jawa Barat',lat:-6.400173,lon:107.443611,zone:'Asia/Jakarta',mode:'MANUAL',method:20,logo:'logomasjid.jpeg',logoData:'',locFont:'Tahoma',locSize:1.35,locColor:'#e7f1ff',ticker:'Selamat Datang di Masjid Jamie Babussalam',iqamahTicker:'Mohon bersiap, luruskan dan rapatkan shaf. Matikan atau senyapkan ponsel.',tickerSize:2.8,header:'#1763a5',brand:'#ffe83b',clock:'#70f2ff',tickerColor:'#ffe83b',schedule:'#1768ad',font:'Tahoma',slides:'background.jpeg,poster1.jpg,poster2.jpg',seconds:12,hijri:1,beepEnabled:true,beepBefore:10,beepFreq:880,beepDuration:1000,beepVolume:.45},admin:{mode:'AUTO',title:20,label:14,input:12,button:12,width:50,cols:4},base:{Imsak:'04:31',Fajr:'04:41',Sunrise:'06:00',Dhuhr:'12:02',Asr:'15:17',Maghrib:'18:00',Isha:'19:10'},corr:{Imsak:0,Fajr:0,Sunrise:0,Dhuhr:0,Asr:0,Maghrib:0,Isha:0},daily:{Fajr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10},Dhuhr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:5},Asr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:0},Maghrib:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10},Isha:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:5}},fri:{first:['Dhuhr'],pre:1,a1:5,wait:7,a2:5,khutbah:15,prayer:10,rawatib:5,khatib:'Ustadz Eko',imam:'Ustadz Eko',bilal:'Syafei'},phbi:{name:'',date:'',note:''},cash:{period:'Periode Bulan Berjalan',opening:0,income:0,expense:0,balance:0}};
+const DEF={g:{name:'MASJID JAMIE BABUSSALAM',loc:'Cikampek, Jawa Barat',lat:-6.400173,lon:107.443611,zone:'Asia/Jakarta',mode:'MANUAL',method:20,logo:'logomasjid.jpeg',logoData:'',locFont:'Tahoma',locSize:1.35,locColor:'#e7f1ff',ticker:'Selamat Datang di Masjid Jamie Babussalam',iqamahTicker:'Mohon bersiap, luruskan dan rapatkan shaf. Matikan atau senyapkan ponsel.',tickerSize:2.8,header:'#1763a5',brand:'#ffe83b',clock:'#70f2ff',tickerColor:'#ffe83b',schedule:'#1768ad',font:'Tahoma',slides:'background.jpeg,poster1.jpg,poster2.jpg',seconds:12,hijri:1,beepEnabled:true,beepBefore:10,beepFreq:880,beepDuration:1000,beepVolume:.45},admin:{mode:'AUTO',title:20,label:14,input:12,button:12,width:50,cols:4},base:{Imsak:'04:31',Fajr:'04:41',Sunrise:'06:00',Dhuhr:'12:02',Asr:'15:17',Maghrib:'18:00',Isha:'19:10'},corr:{Imsak:0,Fajr:0,Sunrise:0,Dhuhr:0,Asr:0,Maghrib:0,Isha:0},daily:{Fajr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10},Dhuhr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:5},Asr:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:0},Maghrib:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10},Isha:{imam:'Ustadz Ahmad',pre:1,iqamah:10,prayer:10,rawatib:5}},fri:{first:['Dhuhr'],pre:1,a1:5,wait:7,a2:5,khutbah:15,prayer:10,rawatib:5,khatib:'Ustadz Eko',imam:'Ustadz Eko',bilal:'Syafei'},
+ied:{
+  active:false,
+  type:'Idul Fitri',
+  time:'06:30',
+  prayer:5,
+  khutbah:15,
+  imam:'',
+  khatib:'',
+  bilal:''
+},
+tarawih:{
+  active:false,
+  duration:90,
+  imam:''
+},
+phbi:{name:'',date:'',note:''},cash:{period:'Periode Bulan Berjalan',opening:0,income:0,expense:0,balance:0}};
 let C=load(),T={},slideTimer,simTimer,sim=false,audioCtx=null,lastBeep='',previousState='',pendingLogoData='';
+window.C=C;
+console.log('DEBUG GLOBAL C:',window.C);
 function $(i){return document.getElementById(i)}function cp(o){return JSON.parse(JSON.stringify(o))}function merge(a,b){if(!b)return a;Object.keys(b).forEach(k=>a[k]=(typeof b[k]==='object'&&b[k]&&!Array.isArray(b[k]))?merge(a[k]||{},b[k]):b[k]);return a}function load(){try{const raw=localStorage.getItem('JWS_COMPLETE_V2_0')||localStorage.getItem('JWS_COMPLETE_V1_9')||localStorage.getItem('JWS_COMPLETE_V1_8')||localStorage.getItem('JWS_COMPLETE_V1_7')||localStorage.getItem('JWS_COMPLETE_V1_6');return merge(cp(DEF),JSON.parse(raw)||{})}catch(e){return cp(DEF)}}function save(){try{localStorage.setItem('JWS_COMPLETE_V2_0',JSON.stringify(C))}catch(e){$('status').innerHTML='Penyimpanan browser tidak tersedia pada mode preview.'}}function pad(v){return +v<10?'0'+(+v):String(v)}function at(d,t){const p=t.split(':');return new Date(d.getFullYear(),d.getMonth(),d.getDate(),+p[0],+p[1])}function add(t,m){const p=t.split(':'),d=new Date(2000,0,1,+p[0],+p[1]+(+m||0));return pad(d.getHours())+':'+pad(d.getMinutes())}function cd(s){s=Math.max(0,Math.ceil(s));return pad(Math.floor(s/60))+':'+pad(s%60)}function rupiah(n){return'Rp '+Number(n||0).toLocaleString('id-ID')}
 //let audioCtx=null;
 function ensureAudio(){
@@ -856,7 +874,33 @@ function showOverlayAnimated(el){
 function apply(){console.log("APPLY DIJALANKAN");const r=document.documentElement,g=C.g,a=C.admin;r.style.setProperty('--header-bg',g.header);r.style.setProperty('--brand-color',g.brand);r.style.setProperty('--clock-color',g.clock);r.style.setProperty('--ticker-color',g.tickerColor);r.style.setProperty('--schedule-bg',g.schedule);r.style.setProperty('--main-font',g.font);r.style.setProperty('--ticker-size',g.tickerSize+'vw');r.style.setProperty('--location-size',g.locSize+'vw');r.style.setProperty('--admin-title',a.title+'px');r.style.setProperty('--admin-label',a.label+'px');r.style.setProperty('--admin-input',a.input+'px');r.style.setProperty('--admin-button',a.button+'px');r.style.setProperty('--admin-width',a.width+'vw');r.style.setProperty('--admin-cols',a.mode==='HP'?1:(a.mode==='AUTO'&&innerWidth<900?1:a.cols));$('masjid').innerHTML=g.name;$('lokasi').innerHTML ='<img src="pin.png" class="loc-icon"> ' +
   C.g.loc;$('lokasi').style.fontFamily=g.locFont;$('lokasi').style.color=g.locColor;$('ticker').innerHTML=g.ticker;$('iqTicker').innerHTML=g.iqamahTicker;
   const logo=$('logo');logo.style.display='none';logo.onload=function(){logo.style.display='block'};logo.onerror=function(){logo.style.display='none'};logo.src='Logomasjid.png';ALL.forEach(k=>T[k]=add(C.base[k],Number(C.corr[k]||0)));cards();information();slides()}
-function cards(){let h='';SHOW.forEach(k=>h+='<div class="pray" id="c'+k+'"><span>'+namaSholat(k)+'</span><b>'+T[k]+'</b></div>');$('left').innerHTML=h}function information(){const end=+C.cash.opening+(+C.cash.income)-(+C.cash.expense);$('periode').innerHTML=C.cash.period;$('saldoAwal').innerHTML=rupiah(C.cash.opening);$('masuk').innerHTML=rupiah(C.cash.income);$('keluar').innerHTML=rupiah(C.cash.expense);$('saldoAkhir').innerHTML=rupiah(end);$('saldoAkhir').style.color=end>0?'#45ff74':end<0?'#ff4545':'#fff';renderPHBI()}
+function cards(){
+  let h='';
+  const now=new Date();
+  const today=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  let showIed=false;
+
+  if(C.ied&&C.ied.active===true&&C.ied.date===today&&C.ied.time){
+    const iedTime=at(now,C.ied.time);
+    const showTime=new Date(iedTime.getTime()-60*60000);
+    showIed=now>=showTime&&now<iedTime;
+  }
+
+  SHOW.forEach(k=>{
+    let nama=namaSholat(k);
+    let waktu=T[k];
+
+    if(k==='Fajr'&&showIed){
+      nama=(C.ied.type||'IED').toUpperCase();
+      waktu=C.ied.time;
+    }
+
+    h+='<div class="pray" id="c'+k+'"><span>'+nama+'</span><b>'+waktu+'</b></div>';
+  });
+
+  $('left').innerHTML=h;
+}
+function information(){const end=+C.cash.opening+(+C.cash.income)-(+C.cash.expense);$('periode').innerHTML=C.cash.period;$('saldoAwal').innerHTML=rupiah(C.cash.opening);$('masuk').innerHTML=rupiah(C.cash.income);$('keluar').innerHTML=rupiah(C.cash.expense);$('saldoAkhir').innerHTML=rupiah(end);$('saldoAkhir').style.color=end>0?'#45ff74':end<0?'#ff4545':'#fff';renderPHBI()}
 let bannerSlides=[];
 let slideRun=0;
 function setSlideBanners(list){
@@ -974,6 +1018,8 @@ function buildOverlayData(){
 
   console.log('OVERLAY DATA:',overlayData);
 }
+
+//
 function fplan(n){
   if(n.getDay()!==5) return null;
 
@@ -1074,49 +1120,374 @@ for(const k of DAILY){
 
 return null;
 }
+//
+function iedPlan(n){
+
+  const ied=C.ied;
+
+  if(!ied || ied.active!==true)
+    return null;
+
+  const today=
+    n.getFullYear()+'-'+
+    pad(n.getMonth()+1)+'-'+
+    pad(n.getDate());
+console.log(
+  'IED CHECK:',
+  {
+    active:ied.active,
+    dateApi:ied.date,
+    today:today,
+    time:ied.time,
+    prayer:ied.prayer,
+    khutbah:ied.khutbah
+  }
+);
+  if(ied.date!==today)
+    return null;
+
+  const prayer=
+    Number(ied.prayer || 0);
+
+  const khutbah=
+    Number(ied.khutbah || 0);
+
+  const start=
+    at(n,ied.time || '06:30');
+
+  const pre=
+    new Date(
+      start.getTime()-60000
+    );
+
+  const pe=
+    new Date(
+      start.getTime()+
+      prayer*60000
+    );
+
+  const ke=
+    new Date(
+      pe.getTime()+
+      khutbah*60000
+    );
+console.log(
+  'IED PLAN:',
+  {
+    now:n,
+    pre:pre,
+    start:start,
+    prayerEnd:pe,
+    khutbahEnd:ke
+  }
+);
+  return{
+    pre,
+    prayer:start,
+    pe,
+    ke
+  };
+}
+
+//
+function state(n){
+
+  // =========================
+  // MODE SHOLAT IED
+  // =========================
+  const ip=iedPlan(n);
+
+  if(ip){
+
+    // 1 MENIT MENJELANG SHOLAT IED
+    if(n>=ip.pre && n<ip.prayer)
+      return {
+        m:'iedPre',
+        k:'IED',
+        e:ip.prayer
+      };
+
+    // SHOLAT IED
+    if(n>=ip.prayer && n<ip.pe)
+      return {
+        m:'iedPrayer',
+        k:'IED',
+        e:ip.pe
+      };
+
+    // KHUTBAH IED
+    if(n>=ip.pe && n<ip.ke)
+      return {
+        m:'iedKhutbah',
+        k:'IED',
+        e:ip.ke
+      };
+  }
+
+
+  // =========================
+  // MODE SHOLAT JUMAT
+  // =========================
+  const p=fplan(n);
+
+  if(p){
+
+    if(n>=p.pre && n<p.adzan)
+      return {
+        m:'fpre',
+        k:'JUMAT',
+        e:p.adzan
+      };
+
+    // ADZAN
+    if(n>=p.adzan && n<p.ae)
+      return {
+        m:'fadzan',
+        k:'JUMAT',
+        e:p.ke
+      };
+
+    // KHUTBAH
+    if(n>=p.ae && n<p.ke)
+      return {
+        m:'kh',
+        k:'JUMAT',
+        e:p.ke
+      };
+
+    // SHOLAT
+    if(n>=p.ke && n<p.pe)
+      return {
+        m:'fp',
+        k:'JUMAT',
+        e:p.pe
+      };
+
+    // RAWATIB
+    if(n>=p.pe && n<p.re)
+      return {
+        m:'fr',
+        k:'JUMAT',
+        e:p.re
+      };
+
+    // SELESAI JUMAT
+    if(n>=p.re)
+      return {
+        m:'done',
+        k:'JUMAT',
+        e:n
+      };
+  }
+
+  // =========================
+  // MODE SHOLAT HARIAN
+  // =========================
+  for(const k of DAILY){
+
+    if(n.getDay()===5 && k==='Dhuhr')
+      continue;
+
+    const c=C.daily[k];
+
+    if(!c)
+      continue;
+
+    const pr=at(n,T[k]);
+    const pre=new Date(
+      pr.getTime()-c.pre*60000
+    );
+
+    const iq=new Date(
+      pr.getTime()+c.iqamah*60000
+    );
+
+    const pe=new Date(
+      iq.getTime()+c.prayer*60000
+    );
+
+    const re=new Date(
+      pe.getTime()+c.rawatib*60000
+    );
+
+    // Tambahan durasi Tarawih
+    const tarawihDuration=
+      k==='Isha' &&
+      C.tarawih &&
+      C.tarawih.active===true
+        ? +C.tarawih.duration||0
+        : 0;
+
+    const te=new Date(
+      re.getTime()+tarawihDuration*60000
+    );
+
+    // MENJELANG ADZAN
+    if(n>=pre && n<pr)
+      return {
+        k,
+        m:'pre',
+        e:pr
+      };
+
+    // ADZAN / IQOMAH
+    if(n>=pr && n<iq)
+      return {
+        k,
+        m:'iq',
+        e:iq
+      };
+
+    // SHOLAT WAJIB
+    if(n>=iq && n<pe)
+      return {
+        k,
+        m:'pr',
+        e:pe
+      };
+
+    // SHOLAT RAWATIB
+    if(n>=pe && n<re)
+      return {
+        k,
+        m:'rw',
+        e:re
+      };
+
+    // SHOLAT TARAWIH
+    if(
+      k==='Isha' &&
+      C.tarawih &&
+      C.tarawih.active===true &&
+      n>=re &&
+      n<te
+    ){
+      return {
+        k:'Isha',
+        m:'tarawih',
+        e:te
+      };
+    }
+  }
+
+  return null;
+}
+
+function stateLAMA(n){
+  const p=fplan(n);
+
+  if(p){
+    if(n>=p.pre&&n<p.adzan)
+      return {m:'fpre',k:'JUMAT',e:p.adzan};
+
+    // ADZAN
+    if(n>=p.adzan&&n<p.ae)
+      return {m:'fadzan',k:'JUMAT',e:p.ke};
+
+    // KHUTBAH
+    if(n>=p.ae&&n<p.ke)
+      return {m:'kh',k:'JUMAT',e:p.ke};
+
+    // SHOLAT
+    if(n>=p.ke&&n<p.pe)
+      return {m:'fp',k:'JUMAT',e:p.pe};
+
+    // RAWATIB
+if(n>=p.pe&&n<p.re)
+  return {m:'fr',k:'JUMAT',e:p.re};
+
+// SELESAI JUMAT
+if(n>=p.re)
+  return {m:'done',k:'JUMAT',e:n};
+  }
+
+for(const k of DAILY){
+
+  if(n.getDay()===5 && k==='Dhuhr')
+    continue;
+
+  const c=C.daily[k];
+
+  const pr=at(n,T[k]);
+  const pre=new Date(pr-c.pre*60000);
+  const iq=new Date(pr.getTime()+c.iqamah*60000);
+  const pe=new Date(iq.getTime()+c.prayer*60000);
+  const re=new Date(pe.getTime()+c.rawatib*60000);
+
+  if(n >= pre && n < pr)
+    return {k,m:'pre',e:pr};
+
+  if(n >= pr && n < iq)
+    return {k,m:'iq',e:iq};
+
+  if(n >= iq && n < pe)
+    return {k,m:'pr',e:pe};
+
+  if(n >= pe && n < re)
+    return {k,m:'rw',e:re};
+}
+
+return null;
+}
 function processBeep(s,n){
   const key=s?s.m+':'+(s.k||''):'';
+
   if(s){
     const remain=Math.ceil((s.e-n)/1000);
+
     console.log('MODE=',s.m,'REMAIN=',remain);
-console.log(
-  'STATE CHANGE',
-  previousState,
-  '=>',
-  key
-);
-    // Warning 5 detik sebelum masuk waktu sholat
-    if((s.m==='pre'||s.m==='fpre')&&remain<=5&&remain>0){
+    console.log('STATE CHANGE',previousState,'=>',key);
+
+    // Warning 5 detik: harian, Jumat, Ied
+    if(
+      (s.m==='pre'||s.m==='fpre'||s.m==='iedPre') &&
+      remain<=5 &&
+      remain>0
+    ){
       const mark='warning:'+key+':'+remain+':'+n.toDateString();
+
       if(lastBeep!==mark){
         lastBeep=mark;
+        console.log('BEEP WARNING:',s.m,remain);
         beepWarning();
       }
     }
-    // Warning 5 detik sebelum masuk mode sholat
+
+    // Warning 5 detik menjelang sholat berjamaah harian
     if(s.m==='iq'&&remain<=5&&remain>0){
       const mark='iqwarning:'+key+':'+remain+':'+n.toDateString();
+
       if(lastBeep!==mark){
         lastBeep=mark;
         beepWarning();
       }
     }
- // TOOOT saat masuk waktu sholat harian
-if(previousState.indexOf('pre:')===0 && s.m==='iq'){
-  console.log('TRIGGER SHOLAT HARIAN');
-  beepSholat();
-}
-// TOOOT saat masuk adzan Jumat
-if(previousState.indexOf('fpre:')===0 && s.m==='fadzan'){
-  console.log('TRIGGER ADZAN JUMAT');
-  beepSholat();
-}
+
+    // Masuk waktu sholat harian
+    if(previousState.indexOf('pre:')===0&&s.m==='iq'){
+      console.log('TRIGGER SHOLAT HARIAN');
+      beepSholat();
+    }
+
+    // Masuk adzan Jumat
+    if(previousState.indexOf('fpre:')===0&&s.m==='fadzan'){
+      console.log('TRIGGER ADZAN JUMAT');
+      beepSholat();
+    }
+
+    // Masuk waktu Sholat Ied
+    if(previousState.indexOf('iedPre:')===0&&s.m==='iedPrayer'){
+      console.log('TRIGGER SHOLAT IED');
+      beepSholat();
+    }
+
+    // Iqamah selesai ? sholat berjamaah
+    if(previousState.indexOf('iq:')===0&&s.m==='pr'){
+      console.log('TRIGGER MODE SHOLAT');
+      beepSholat();
+    }
   }
-  // TOOOT saat masuk mode sholat (iq -> pr)
-  if(previousState.indexOf('iq:')===0&&s.m==='pr'){
-    console.log('TRIGGER MODE SHOLAT');
-    beepSholat();
-  }
+
   previousState=key;
 }
 function setP(t,p,c,who,note,show,flash,n,iqTicker){
@@ -1159,6 +1530,87 @@ function render(s,n){
 
   const f=C.fri;
   const r=cd((s.e-n)/1000);
+  // ======================
+  // MODE SHOLAT IED
+  // ======================
+
+if(s.m==='iedPre'){
+
+  const jenisIed=
+    C.ied && C.ied.type
+      ? C.ied.type.toUpperCase()
+      : 'IED';
+
+  const bilalIed=
+    C.ied && C.ied.bilal
+      ? 'BILAL/MUAZIN: '+C.ied.bilal
+      : '';
+
+  setP(
+    'SEBENTAR LAGI MASUK WAKTU',
+    'SHOLAT '+jenisIed,
+    r,
+    bilalIed,
+    '',
+    true,
+    true,
+    n,
+    false
+  );
+  return;
+}
+
+  if(s.m==='iedPrayer'){
+
+    const jenisIed=
+      C.ied && C.ied.type
+        ? C.ied.type.toUpperCase()
+        : 'IED';
+
+    const imamIed=
+      C.ied && C.ied.imam
+        ? 'IMAM: '+C.ied.imam
+        : '';
+
+    setP(
+      'SHOLAT IED',
+      jenisIed,
+      '',
+      imamIed,
+      '',
+      true,
+      true,
+      n,
+      false
+    );
+    return;
+  }
+
+if(s.m==='iedKhutbah'){
+
+  const jenisIed=
+    C.ied && C.ied.type
+      ? C.ied.type.toUpperCase()
+      : 'IED';
+
+  const khatibIed=
+    C.ied && C.ied.khatib
+      ? 'KHATIB: '+C.ied.khatib
+      : '';
+
+  setP(
+    'KHUTBAH',
+    jenisIed,
+    '',             // countdown tidak ditampilkan
+    khatibIed,
+    'Dimohon menjaga ketenangan selama khutbah berlangsung',
+    true,
+    true,
+    n,
+    false
+  );
+  return;
+}
 
   // ======================
   // MODE JUMAT
@@ -1319,8 +1771,26 @@ if(s.m==='done'){
       false
     );
   }
+    else if(s.m==='tarawih'){
+    const imamTarawih=
+      C.tarawih && C.tarawih.imam
+        ? 'IMAM: '+C.tarawih.imam
+        : im;
+
+    setP(
+      'SEDANG BERLANGSUNG',
+      'SHOLAT TARAWIH',
+      r,
+      imamTarawih,
+      '',
+      true,
+      true,
+      n,
+      false
+    );
+  }
   else if(s.m==='done'){
-  o.className='overlay';
+    o.className='overlay';
   o.style.display='none';
   return;
 }
@@ -1328,79 +1798,117 @@ if(s.m==='done'){
 
 function next(n){const fp=fplan(n);if(fp&&n<fp.a1)return{k:'JUMAT',d:fp.a1};for(const k of DAILY){if(n.getDay()===5&&k==='Dhuhr')continue;const d=at(n,T[k]);if(d>n)return{k,d}}const p=T.Fajr.split(':');return{k:'Fajr',d:new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,+p[0],+p[1])}}
 function tick(){
-  const n=new Date();
-  const x=next(n);
-  const df=Math.max(0,Math.floor((x.d-n)/1000));
+const n=new Date();
+let x=next(n);
+let modeIedHeader=false;
 
-  $('headerClock').innerHTML=
-    pad(n.getHours())+':'+
-    pad(n.getMinutes())+':'+
-    pad(n.getSeconds());
+if(C.ied&&C.ied.active===true&&C.ied.date&&C.ied.time){
+  const today=n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate());
 
-  const D=[
-    'Minggu',
-    'Senin',
-    'Selasa',
-    'Rabu',
-    'Kamis',
-    'Jumat',
-    'Sabtu'
-  ];
+  if(C.ied.date===today){
+    const iedTime=at(n,C.ied.time);
+    const showTime=new Date(iedTime.getTime()-60*60000);
 
-  const bulan=[
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember'
-  ];
-
-  $('headerDate').innerHTML=
-    D[n.getDay()]+', '+
-    n.getDate()+' '+
-    bulan[n.getMonth()]+' '+
-    n.getFullYear()+
-    ' | '+
-    hijri(n);
-
-  $('nextName').innerHTML=
-    x.k==='JUMAT'
-      ? 'JUMAT'
-      : namaSholat(x.k);
-
-  $('nextCount').innerHTML=
-    pad(Math.floor(df/3600))+':' +
-    pad(Math.floor((df%3600)/60))+':' +
-    pad(df%60);
-
-  $('offLabel').innerHTML=
-    x.k==='JUMAT'
-      ? 'KHATIB :'
-      : 'IMAM :';
-
-  $('offName').innerHTML=
-    x.k==='JUMAT'
-      ? C.fri.khatib
-      : (
-          C.daily[x.k]
-            ? C.daily[x.k].imam
-            : '-'
-        );
-
-  SHOW.forEach(k=>{
-    const e=$('c'+k);
-    if(e){
-      e.className='pray '+(k===x.k?'active':'');
+    if(n>=showTime&&n<iedTime){
+      modeIedHeader=true;
+      x={
+        k:'IED',
+        d:iedTime
+      };
     }
-  });
+  }
+}
 
+const df=Math.max(0,Math.floor((x.d-n)/1000));
+
+$('headerClock').innerHTML=
+  pad(n.getHours())+':'+
+  pad(n.getMinutes())+':'+
+  pad(n.getSeconds());
+
+const D=[
+  'Minggu',
+  'Senin',
+  'Selasa',
+  'Rabu',
+  'Kamis',
+  'Jumat',
+  'Sabtu'
+];
+
+const bulan=[
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember'
+];
+
+$('headerDate').innerHTML=
+  D[n.getDay()]+', '+
+  n.getDate()+' '+
+  bulan[n.getMonth()]+' '+
+  n.getFullYear()+
+  ' | '+
+  hijri(n);
+
+$('nextName').innerHTML=
+  modeIedHeader
+    ? (C.ied.type||'IED').toUpperCase()
+    : (
+        x.k==='JUMAT'
+          ? 'JUMAT'
+          : namaSholat(x.k)
+      );
+
+$('nextCount').innerHTML=
+  pad(Math.floor(df/3600))+':' +
+  pad(Math.floor((df%3600)/60))+':' +
+  pad(df%60);
+
+$('offLabel').innerHTML=
+  modeIedHeader
+    ? 'IMAM :'
+    : (
+        x.k==='JUMAT'
+          ? 'KHATIB :'
+          : 'IMAM :'
+      );
+
+$('offName').innerHTML=
+  modeIedHeader
+    ? (C.ied.imam||'-')
+    : (
+        x.k==='JUMAT'
+          ? C.fri.khatib
+          : (
+              C.daily[x.k]
+                ? C.daily[x.k].imam
+                : '-'
+            )
+      );
+
+const activeKey=
+  modeIedHeader
+    ? 'Fajr'
+    : x.k;
+
+SHOW.forEach(k=>{
+  const e=$('c'+k);
+
+  if(e){
+    e.className=
+      'pray '+
+      (k===activeKey?'active':'');
+  }
+});
   if(sim) return;
 
 const s=state(n);
@@ -1635,7 +2143,7 @@ if(api.waktuSholat){
   C.daily.Isha.rawatib =
     w.rawatib.Isha;
 
-  //
+    //
   // JUMAT
   //
   C.fri.a1 =
@@ -1653,6 +2161,49 @@ if(api.waktuSholat){
   C.fri.rawatib =
     w.jumat.rawatib;
 
+//
+// SHOLAT IED
+//
+if(w.ied){
+  C.ied =
+    C.ied || {};
+  C.ied.active =
+    w.ied.active === true;
+  C.ied.type =
+    w.ied.type || 'Idul Fitri';
+  C.ied.date =
+  w.ied.date || '';
+  C.ied.time =
+    w.ied.time || '06:30';
+  C.ied.prayer =
+    Number(w.ied.sholat || 20);
+  C.ied.khutbah =
+    Number(w.ied.khutbah || 30);
+  C.ied.imam =
+    w.ied.imam || '';
+  C.ied.khatib =
+    w.ied.khatib || '';
+  C.ied.bilal =
+    w.ied.bilal || '';
+}
+
+//
+// SHOLAT TARAWIH
+//
+if(w.tarawih){
+
+  C.tarawih =
+    C.tarawih || {};
+
+  C.tarawih.active =
+    w.tarawih.active === true;
+
+  C.tarawih.duration =
+    Number(w.tarawih.duration || 60);
+
+  C.tarawih.mulai =
+    w.tarawih.mulai || '';
+}
 }
     //
     // JADWAL SHOLAT
@@ -1685,16 +2236,17 @@ if(api.waktuSholat){
 
       ALL.forEach(function(k){
 
-        T[k] = add(
-          C.base[k],
-          Number(
-            C.corr[k] || 0
-          )
-        );
+  T[k] = add(
+    C.base[k],
+    Number(
+      C.corr[k] || 0
+    )
+  );
 
-      });
+});
 
-      cards();
+
+cards();window
     }
 
     //
