@@ -1022,7 +1022,7 @@
       </footer>
     </div>
     <div id="version">
-      v2026.10.25-01
+      JWS-BBS-V2.5 Stable
     </div>
     <section id="overlay" class="overlay">
       <div id="pt" class="phase-title">
@@ -1051,7 +1051,7 @@
     <!-- ==================== PANEL PENGATURAN ==================== -->
     <section id="panel" class="panel">
       <h2>
-        PENGATURAN JWS v2.0 STABLE
+        PENGATURAN JWS v2.5 STABLE
       </h2>
       <div class="tabs">
         <button class="on" onclick="tab(0,this)">
@@ -3486,7 +3486,7 @@
           document.getElementById('panel')
           .classList.toggle('show');
         }
-        const VERSION = 'v2026.10.25-05';
+        const VERSION = 'JWS-BBS-V2.5 Stable';
         window.addEventListener('load', () => {
             $('version').textContent = VERSION;
           });
@@ -3844,6 +3844,47 @@
         //
         // AGENDA
         //
+        function formatAgendaDate(value) {
+          if (!value) return '';
+          var raw = String(value).trim();
+          var bulan = [
+            'Jan', 'Feb', 'Mar', 'Apr',
+            'Mei', 'Jun', 'Jul', 'Agu',
+            'Sep', 'Okt', 'Nov', 'Des'
+            ];
+          var dateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+          if (dateOnly) {
+            // Tanggal dari Google Sheet/API sudah terpotong sebagai tanggal UTC hari sebelumnya.
+            var corrected = new Date(Date.UTC(
+              Number(dateOnly[1]),
+              Number(dateOnly[2]) - 1,
+              Number(dateOnly[3]) + 1,
+              12, 0, 0
+              ));
+            return pad(corrected.getUTCDate()) + '-' +
+              bulan[corrected.getUTCMonth()] + '-' +
+              corrected.getUTCFullYear();
+          }
+          var date = new Date(raw);
+          if (!isNaN(date.getTime())) {
+            try {
+              var parts = new Intl.DateTimeFormat('en-GB', {
+                  timeZone: C.g.zone || 'Asia/Jakarta',
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric'
+                }).formatToParts(date);
+              var values = {};
+              parts.forEach(function(part) {
+                  values[part.type] = part.value;
+                });
+              return values.day + '-' +
+                bulan[Number(values.month) - 1] + '-' +
+                values.year;
+            } catch (e) {}
+          }
+          return raw;
+        }
         function renderAgenda(list) {
           if (!list || !list.length) {
             return;
@@ -3857,21 +3898,7 @@
           }
           var txt = '';
           list.forEach(function(item) {
-              var d = item.date || '';
-              if (d) {
-                var p = d.split('-');
-                if (p.length === 3) {
-                  var bulan = [
-                  'Jan', 'Feb', 'Mar', 'Apr',
-                  'Mei', 'Jun', 'Jul', 'Agu',
-                  'Sep', 'Okt', 'Nov', 'Des'
-                  ];
-                  d =
-                  p[2] + '-' +
-                  bulan[parseInt(p[1], 10) - 1] +
-                  '-' + p[0];
-                }
-              }
+              var d = formatAgendaDate(item.date || '');
               txt +=
               '<b>' + d + '</b><br>' +
               (item.notes || '-') +
