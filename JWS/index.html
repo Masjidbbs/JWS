@@ -1228,57 +1228,14 @@ function state(n){
   // =========================
   // MODE SHOLAT JUMAT
   // =========================
-  const p=fplan(n);
-
-  if(p){
-
-    if(n>=p.pre && n<p.adzan)
-      return {
-        m:'fpre',
-        k:'JUMAT',
-        e:p.adzan
-      };
-
-    // ADZAN
-    if(n>=p.adzan && n<p.ae)
-      return {
-        m:'fadzan',
-        k:'JUMAT',
-        e:p.ke
-      };
-
-    // KHUTBAH
-    if(n>=p.ae && n<p.ke)
-      return {
-        m:'kh',
-        k:'JUMAT',
-        e:p.ke
-      };
-
-    // SHOLAT
-    if(n>=p.ke && n<p.pe)
-      return {
-        m:'fp',
-        k:'JUMAT',
-        e:p.pe
-      };
-
-    // RAWATIB
-    if(n>=p.pe && n<p.re)
-      return {
-        m:'fr',
-        k:'JUMAT',
-        e:p.re
-      };
-
-    // SELESAI JUMAT
-    if(n>=p.re)
-      return {
-        m:'done',
-        k:'JUMAT',
-        e:n
-      };
-  }
+const p=fplan(n);
+if(p){
+  if(n>=p.pre&&n<p.adzan)return{m:'fpre',k:'JUMAT',e:p.adzan};
+  if(n>=p.adzan&&n<p.ae)return{m:'fadzan',k:'JUMAT',e:p.ae};
+  if(n>=p.ae&&n<p.ke)return{m:'kh',k:'JUMAT',e:p.ke};
+  if(n>=p.ke&&n<p.pe)return{m:'fp',k:'JUMAT',e:p.pe};
+  if(n>=p.pe&&n<p.re)return{m:'fr',k:'JUMAT',e:p.re};
+}
 
   // =========================
   // MODE SHOLAT HARIAN
@@ -1425,7 +1382,8 @@ if(n>=p.pe&&n<p.re)
 
 // SELESAI JUMAT
 if(n>=p.re)
-  return {m:'done',k:'JUMAT',e:n};
+  //return {m:'done',k:'JUMAT',e:n};
+  return null;
   }
 
 for(const k of DAILY){
