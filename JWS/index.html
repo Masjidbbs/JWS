@@ -482,6 +482,70 @@
         font-size: 12px;
         line-height: 1.4;
       }
+      .phase-settings-card {
+        min-width: 0;
+      }
+      .phase-preview {
+        grid-column: 1/-1;
+        position: relative;
+        min-height: 250px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: var(--phase-preview-gap,4px);
+        padding: 18px 12px var(--phase-preview-bottom-space,42px);
+        border: 1px solid rgba(100,181,246,.45);
+        border-radius: 10px;
+        font-family: var(--phase-font,var(--main-font)),sans-serif;
+        text-align: center;
+        background: radial-gradient(circle,var(--phase-bg-center,#133b73),var(--phase-bg-edge,#010815) var(--phase-bg-spread,72%));
+        box-sizing: border-box;
+      }
+      .phase-preview-title {
+        color: var(--phase-title-color,#ffffff);
+        font-size: var(--phase-preview-title-size,20px);
+        font-weight: 900;
+        line-height: 1.05;
+      }
+      .phase-preview-prayer {
+        color: var(--phase-prayer-color,#ffe83b);
+        font-size: var(--phase-preview-prayer-size,42px);
+        font-weight: 900;
+        line-height: 1;
+      }
+      .phase-preview-count {
+        color: var(--phase-count-color,#70f2ff);
+        font-size: var(--phase-preview-count-size,48px);
+        font-weight: 900;
+        line-height: 1;
+      }
+      .phase-preview-people {
+        color: var(--phase-people-color,#ffffff);
+        font-size: var(--phase-preview-people-size,16px);
+        line-height: 1.2;
+      }
+      .phase-preview-note {
+        color: var(--phase-note-color,#c8dcff);
+        font-size: var(--phase-preview-note-size,14px);
+        line-height: 1.25;
+      }
+      .phase-preview-ticker {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: var(--phase-preview-ticker-height,34px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top: 2px solid var(--ticker-color);
+        background: var(--phase-ticker-bg,#020c16);
+        color: var(--ticker-color);
+        font-size: 12px;
+        font-weight: 800;
+      }
       .panel input[type="color"] {
         width: 100%;
         min-width: 0;
@@ -597,49 +661,58 @@
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        gap: var(--phase-gap,.4vh);
         text-align: center;
-        padding-bottom: 10vh;
-        background: radial-gradient(circle,#133b73,#010815 72%)
+        padding-bottom: var(--phase-bottom-space,10vh);
+        font-family: var(--phase-font,var(--main-font)),sans-serif;
+        background: radial-gradient(circle,var(--phase-bg-center,#133b73),var(--phase-bg-edge,#010815) var(--phase-bg-spread,72%))
       }
       .overlay.show {
         display: flex
       }
       .phase-title {
-        font-size: 4vw;
-        font-weight: 900
+        font-size: var(--phase-title-size,4vw);
+        color: var(--phase-title-color,#ffffff);
+        font-weight: 900;
+        line-height: 1.05
       }
       .phase-title.flash {
-        color: #ff3838;
-        text-shadow: 0 0 2vw red
+        color: var(--phase-flash-color,#ff3838);
+        text-shadow: 0 0 2vw var(--phase-flash-color,#ff3838)
       }
       .phase-prayer {
-        font-size: 12vw;
-        color: var(--brand-color);
-        font-weight: 900
+        font-size: var(--phase-prayer-size,12vw);
+        color: var(--phase-prayer-color,var(--brand-color));
+        font-weight: 900;
+        line-height: 1
       }
       .phase-count {
-        font-size: 14vw;
-        color: var(--clock-color);
-        font-weight: 900
+        font-size: var(--phase-count-size,14vw);
+        color: var(--phase-count-color,var(--clock-color));
+        font-weight: 900;
+        line-height: 1
       }
       .phase-people {
-        font-size: 3.0vw
+        font-size: var(--phase-people-size,3vw);
+        color: var(--phase-people-color,#ffffff);
+        line-height: 1.2
       }
       .phase-note {
-        font-size: 2.6vw;
-        color: #c8dcff
+        font-size: var(--phase-note-size,2.6vw);
+        color: var(--phase-note-color,#c8dcff);
+        line-height: 1.25
       }
       .iqamah-ticker {
         position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
-        height: 10vh;
+        height: var(--phase-ticker-height,10vh);
         display: none;
         align-items: center;
         overflow: hidden;
         border-top: .35vh solid var(--ticker-color);
-        background: #020c16
+        background: var(--phase-ticker-bg,#020c16)
       }
       .iqamah-ticker.show {
         display: flex
@@ -816,7 +889,7 @@
           grid-template-columns: 1fr
         }
         .phase-count {
-          font-size: 18vw
+          font-size: var(--phase-count-size,18vw)
         }
       }
       /* SCALE PANEL SETTING */
@@ -1021,6 +1094,127 @@
       <div id="p2" class="page">
         <div class="grid display-tab-grid">
           <div id="p2Dynamic" class="display-settings-grid">
+          </div>
+          <div class="setting-section-title">
+            Display Countdown / Fase Sholat
+          </div>
+          <div id="phasePreview" class="phase-preview">
+            <div class="phase-preview-title">
+              MENUNGGU IQAMAH
+            </div>
+            <div class="phase-preview-prayer">
+              MAGHRIB
+            </div>
+            <div class="phase-preview-count">
+              09:45
+            </div>
+            <div class="phase-preview-people">
+              IMAM: USTADZ AHMAD
+            </div>
+            <div class="phase-preview-note">
+              Luruskan dan rapatkan shaf
+            </div>
+            <div class="phase-preview-ticker">
+              PREVIEW RUNNING TEXT IQAMAH
+            </div>
+          </div>
+          <div class="card display-settings-card phase-settings-card">
+            <h3>
+              Background & Layout
+            </h3>
+            <p class="setting-hint">
+              Berlaku untuk display Iqamah, Sholat, Rawatib, Tarawih, dan Khutbah.
+            </p>
+            <label for="phaseBgCenter">Warna Background Tengah</label>
+            <input type="color" id="phaseBgCenter" value="#133b73">
+            <label for="phaseBgEdge">Warna Background Tepi</label>
+            <input type="color" id="phaseBgEdge" value="#010815">
+            <label for="phaseBgSpread">Lebar Gradasi Background</label>
+            <div class="setting-range">
+              <input type="range" id="phaseBgSpread" min="40" max="100" step="1" value="72">
+              <span id="phaseBgSpreadValue">72%</span>
+            </div>
+            <label for="phaseFont">Font Display</label>
+            <select id="phaseFont">
+              <option>Arial</option>
+              <option>Verdana</option>
+              <option selected>Tahoma</option>
+              <option>Trebuchet MS</option>
+              <option>Georgia</option>
+              <option>Courier New</option>
+            </select>
+            <label for="phaseGap">Jarak Antar Teks</label>
+            <div class="setting-range">
+              <input type="range" id="phaseGap" min="0" max="3" step="0.1" value="0.4">
+              <span id="phaseGapValue">0.4vh</span>
+            </div>
+            <label for="phaseBottomSpace">Jarak Bawah Konten</label>
+            <div class="setting-range">
+              <input type="range" id="phaseBottomSpace" min="0" max="25" step="1" value="10">
+              <span id="phaseBottomSpaceValue">10vh</span>
+            </div>
+          </div>
+          <div class="card display-settings-card phase-settings-card">
+            <h3>
+              Teks Utama
+            </h3>
+            <label for="phaseTitleColor">Warna Judul Fase</label>
+            <input type="color" id="phaseTitleColor" value="#ffffff">
+            <label for="phaseTitleSize">Ukuran Judul Fase</label>
+            <div class="setting-range">
+              <input type="range" id="phaseTitleSize" min="1" max="8" step="0.1" value="4">
+              <span id="phaseTitleSizeValue">4vw</span>
+            </div>
+            <label for="phasePrayerColor">Warna Nama Sholat/Fase</label>
+            <input type="color" id="phasePrayerColor" value="#ffe83b">
+            <label for="phasePrayerSize">Ukuran Nama Sholat/Fase</label>
+            <div class="setting-range">
+              <input type="range" id="phasePrayerSize" min="3" max="16" step="0.1" value="12">
+              <span id="phasePrayerSizeValue">12vw</span>
+            </div>
+            <label for="phaseCountColor">Warna Countdown</label>
+            <input type="color" id="phaseCountColor" value="#70f2ff">
+            <label for="phaseCountSize">Ukuran Countdown</label>
+            <div class="setting-range">
+              <input type="range" id="phaseCountSize" min="4" max="20" step="0.1" value="14">
+              <span id="phaseCountSizeValue">14vw</span>
+            </div>
+            <label for="phaseFlashColor">Warna Peringatan / Flash</label>
+            <input type="color" id="phaseFlashColor" value="#ff3838">
+          </div>
+          <div class="card display-settings-card phase-settings-card">
+            <h3>
+              Petugas & Catatan
+            </h3>
+            <label for="phasePeopleColor">Warna Nama Petugas</label>
+            <input type="color" id="phasePeopleColor" value="#ffffff">
+            <label for="phasePeopleSize">Ukuran Nama Petugas</label>
+            <div class="setting-range">
+              <input type="range" id="phasePeopleSize" min="1" max="7" step="0.1" value="3">
+              <span id="phasePeopleSizeValue">3vw</span>
+            </div>
+            <label for="phaseNoteColor">Warna Catatan</label>
+            <input type="color" id="phaseNoteColor" value="#c8dcff">
+            <label for="phaseNoteSize">Ukuran Catatan</label>
+            <div class="setting-range">
+              <input type="range" id="phaseNoteSize" min="1" max="6" step="0.1" value="2.6">
+              <span id="phaseNoteSizeValue">2.6vw</span>
+            </div>
+          </div>
+          <div class="card display-settings-card phase-settings-card">
+            <h3>
+              Running Text Iqamah
+            </h3>
+            <label for="phaseTickerBg">Background Running Text</label>
+            <input type="color" id="phaseTickerBg" value="#020c16">
+            <label for="phaseTickerHeight">Tinggi Running Text</label>
+            <div class="setting-range">
+              <input type="range" id="phaseTickerHeight" min="5" max="18" step="1" value="10">
+              <span id="phaseTickerHeightValue">10vh</span>
+            </div>
+            <p class="setting-hint">
+              Warna dan ukuran font running text tetap mengikuti setting Running Text utama.
+            </p>
           </div>
           <div class="setting-section-title">
             Tampilan Kas dan Agenda
@@ -1398,6 +1592,149 @@
           fillDisplayBoxInputs(DISPLAY_BOX_DEFAULTS);
           applyDisplayBoxSettings(DISPLAY_BOX_DEFAULTS);
         }
+        // Setting display countdown / fase sholat
+        const PHASE_DISPLAY_DEFAULTS = {
+          phaseBgCenter: '#133b73',
+          phaseBgEdge: '#010815',
+          phaseBgSpread: 72,
+          phaseFont: 'Tahoma',
+          phaseGap: 0.4,
+          phaseBottomSpace: 10,
+          phaseTitleColor: '#ffffff',
+          phaseTitleSize: 4,
+          phasePrayerColor: '#ffe83b',
+          phasePrayerSize: 12,
+          phaseCountColor: '#70f2ff',
+          phaseCountSize: 14,
+          phaseFlashColor: '#ff3838',
+          phasePeopleColor: '#ffffff',
+          phasePeopleSize: 3,
+          phaseNoteColor: '#c8dcff',
+          phaseNoteSize: 2.6,
+          phaseTickerBg: '#020c16',
+          phaseTickerHeight: 10
+        };
+        function getPhaseDisplaySettings() {
+          let saved = {};
+          try {
+            saved = JSON.parse(localStorage.getItem('jwsPhaseDisplaySettings') || '{}');
+          } catch (e) {
+            saved = {};
+          }
+          return {
+            ...PHASE_DISPLAY_DEFAULTS, ...saved
+          };
+        }
+        function readPhaseDisplayInputs() {
+          const current = getPhaseDisplaySettings();
+          const val = (id, fallback) => {
+            const el = document.getElementById(id);
+            return el ? el.value: fallback;
+          };
+          return {
+            phaseBgCenter: val('phaseBgCenter', current.phaseBgCenter),
+            phaseBgEdge: val('phaseBgEdge', current.phaseBgEdge),
+            phaseBgSpread: Number(val('phaseBgSpread', current.phaseBgSpread)),
+            phaseFont: val('phaseFont', current.phaseFont),
+            phaseGap: Number(val('phaseGap', current.phaseGap)),
+            phaseBottomSpace: Number(val('phaseBottomSpace', current.phaseBottomSpace)),
+            phaseTitleColor: val('phaseTitleColor', current.phaseTitleColor),
+            phaseTitleSize: Number(val('phaseTitleSize', current.phaseTitleSize)),
+            phasePrayerColor: val('phasePrayerColor', current.phasePrayerColor),
+            phasePrayerSize: Number(val('phasePrayerSize', current.phasePrayerSize)),
+            phaseCountColor: val('phaseCountColor', current.phaseCountColor),
+            phaseCountSize: Number(val('phaseCountSize', current.phaseCountSize)),
+            phaseFlashColor: val('phaseFlashColor', current.phaseFlashColor),
+            phasePeopleColor: val('phasePeopleColor', current.phasePeopleColor),
+            phasePeopleSize: Number(val('phasePeopleSize', current.phasePeopleSize)),
+            phaseNoteColor: val('phaseNoteColor', current.phaseNoteColor),
+            phaseNoteSize: Number(val('phaseNoteSize', current.phaseNoteSize)),
+            phaseTickerBg: val('phaseTickerBg', current.phaseTickerBg),
+            phaseTickerHeight: Number(val('phaseTickerHeight', current.phaseTickerHeight))
+          };
+        }
+        function fillPhaseDisplayInputs(data) {
+          const s = {
+            ...PHASE_DISPLAY_DEFAULTS, ...data
+          };
+          Object.entries(s).forEach(([id, value]) => {
+              const el = document.getElementById(id);
+              if (el)el.value = value;
+            });
+          updatePhaseDisplayLabels();
+        }
+        function updatePhaseDisplayLabels() {
+          const units = {
+            phaseBgSpread: '%',
+            phaseGap: 'vh',
+            phaseBottomSpace: 'vh',
+            phaseTitleSize: 'vw',
+            phasePrayerSize: 'vw',
+            phaseCountSize: 'vw',
+            phasePeopleSize: 'vw',
+            phaseNoteSize: 'vw',
+            phaseTickerHeight: 'vh'
+          };
+          Object.entries(units).forEach(([id, unit]) => {
+              const input = document.getElementById(id);
+              const output = document.getElementById(`${id}Value`);
+              if (input && output)output.textContent =`${input.value}${unit}`;
+            });
+        }
+        function applyPhaseDisplaySettings(data) {
+          const s = {
+            ...PHASE_DISPLAY_DEFAULTS, ...data
+          };
+          const root = document.documentElement;
+          root.style.setProperty('--phase-bg-center', s.phaseBgCenter);
+          root.style.setProperty('--phase-bg-edge', s.phaseBgEdge);
+          root.style.setProperty('--phase-bg-spread', `${s.phaseBgSpread}%`);
+          root.style.setProperty('--phase-font', s.phaseFont);
+          root.style.setProperty('--phase-gap', `${s.phaseGap}vh`);
+          root.style.setProperty('--phase-bottom-space', `${s.phaseBottomSpace}vh`);
+          root.style.setProperty('--phase-title-color', s.phaseTitleColor);
+          root.style.setProperty('--phase-title-size', `${s.phaseTitleSize}vw`);
+          root.style.setProperty('--phase-prayer-color', s.phasePrayerColor);
+          root.style.setProperty('--phase-prayer-size', `${s.phasePrayerSize}vw`);
+          root.style.setProperty('--phase-count-color', s.phaseCountColor);
+          root.style.setProperty('--phase-count-size', `${s.phaseCountSize}vw`);
+          root.style.setProperty('--phase-flash-color', s.phaseFlashColor);
+          root.style.setProperty('--phase-people-color', s.phasePeopleColor);
+          root.style.setProperty('--phase-people-size', `${s.phasePeopleSize}vw`);
+          root.style.setProperty('--phase-note-color', s.phaseNoteColor);
+          root.style.setProperty('--phase-note-size', `${s.phaseNoteSize}vw`);
+          root.style.setProperty('--phase-ticker-bg', s.phaseTickerBg);
+          root.style.setProperty('--phase-ticker-height', `${s.phaseTickerHeight}vh`);
+          root.style.setProperty('--phase-preview-gap', `${s.phaseGap * 5}px`);
+          root.style.setProperty('--phase-preview-bottom-space', `${Math.max(22, s.phaseBottomSpace * 4.2)}px`);
+          root.style.setProperty('--phase-preview-title-size', `${s.phaseTitleSize * 5}px`);
+          root.style.setProperty('--phase-preview-prayer-size', `${s.phasePrayerSize * 3.5}px`);
+          root.style.setProperty('--phase-preview-count-size', `${s.phaseCountSize * 3.5}px`);
+          root.style.setProperty('--phase-preview-people-size', `${s.phasePeopleSize * 5}px`);
+          root.style.setProperty('--phase-preview-note-size', `${s.phaseNoteSize * 5}px`);
+          root.style.setProperty('--phase-preview-ticker-height', `${Math.max(24, s.phaseTickerHeight * 3.4)}px`);
+        }
+        function previewPhaseDisplaySettings() {
+          const data = readPhaseDisplayInputs();
+          updatePhaseDisplayLabels();
+          applyPhaseDisplaySettings(data);
+        }
+        function savePhaseDisplaySettings() {
+          const data = readPhaseDisplayInputs();
+          localStorage.setItem('jwsPhaseDisplaySettings', JSON.stringify(data));
+          applyPhaseDisplaySettings(data);
+        }
+        function initPhaseDisplaySettings() {
+          const saved = getPhaseDisplaySettings();
+          fillPhaseDisplayInputs(saved);
+          applyPhaseDisplaySettings(saved);
+          Object.keys(PHASE_DISPLAY_DEFAULTS).forEach(id => {
+              const el = document.getElementById(id);
+              if (!el) return;
+              el.addEventListener('input', previewPhaseDisplaySettings);
+              el.addEventListener('change', previewPhaseDisplaySettings);
+            });
+        }
         function fitBoxTitle(el, preferredSize) {
           if (!el) return;
           const minSize = 11;
@@ -1438,6 +1775,7 @@
         }
         document.addEventListener('DOMContentLoaded', () => {
             initDisplayBoxSettings();
+            initPhaseDisplaySettings();
           });
         window.addEventListener('resize', fitBoxTitles);
         //let audioCtx=null;
@@ -3075,6 +3413,7 @@
           a.label = +$('aLabel').value;
           a.input = +$('aInput').value;
           a.button = +$('aButton').value;
+          savePhaseDisplaySettings();
           saveDisplayBoxSettings();
           save();
           apply();
