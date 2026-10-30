@@ -65,10 +65,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   background:linear-gradient(145deg,#ff4d43,#bd1616);
   animation:activePrayerBlink 2.5s ease-in-out infinite;
 }
+
 .active{
   color:#fff;
   animation:activePrayerBlink 3s ease-in-out infinite;
 }
+
 @keyframes activePrayerBlink{
   0%{
     background:#c00;
@@ -80,15 +82,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
     background:#c00;
   }
 }
-#note{
-  font-size:32px;
-  font-weight:700;
-  color:#ffe83b;
-  line-height:1.35;
-  text-align:center;
-  margin-top:18px;
-}
-
 .center{grid-column:2;grid-row:2;position:relative;overflow:hidden;background:#fff;border-radius:.3vw}.center{margin-left:-3.2vw;}.nextbar{margin-left:-3.2vw;}
 .slide{
   position:absolute;
@@ -310,7 +303,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
           translateY(-50%);
     }
 }
-.overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding-bottom:10vh;background:radial-gradient(circle,#133b73,#010815 72%)}.overlay.show{display:flex}.phase-title{font-size:4vw;font-weight:900}.phase-title.flash{color:#ff3838;text-shadow:0 0 2vw red}.phase-prayer{font-size:12vw;color:var(--brand-color);font-weight:900}.phase-count{font-size:14vw;color:var(--clock-color);font-weight:900}.phase-people{font-size:5.0vw}.phase-note{font-size:4.6vw;color:#c8dcff}.iqamah-ticker{position:absolute;left:0;right:0;bottom:0;height:10vh;display:none;align-items:center;overflow:hidden;border-top:.35vh solid var(--ticker-color);background:#020c16}.iqamah-ticker.show{display:flex}.iqamah-ticker .ticker-window{height:100%}
+.overlay{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding-bottom:10vh;background:radial-gradient(circle,#133b73,#010815 72%)}.overlay.show{display:flex}.phase-title{font-size:4vw;font-weight:900}.phase-title.flash{color:#ff3838;text-shadow:0 0 2vw red}.phase-prayer{font-size:12vw;color:var(--brand-color);font-weight:900}.phase-count{font-size:14vw;color:var(--clock-color);font-weight:900}.phase-people{font-size:3.0vw}.phase-note{font-size:2.6vw;color:#c8dcff}.iqamah-ticker{position:absolute;left:0;right:0;bottom:0;height:10vh;display:none;align-items:center;overflow:hidden;border-top:.35vh solid var(--ticker-color);background:#020c16}.iqamah-ticker.show{display:flex}.iqamah-ticker .ticker-window{height:100%}
 .gear{
   position:relative;
   z-index:9998;
@@ -1195,34 +1188,7 @@ console.log(
     ke
   };
 }
-// Helper Traweh true
-function isTarawihActive(n){
-  if(!C.tarawih||C.tarawih.active!==true||!C.tarawih.mulai)
-    return false;
 
-  const p=C.tarawih.mulai.split('-');
-  if(p.length!==3) return false;
-
-  const mulai=new Date(
-    Number(p[0]),
-    Number(p[1])-1,
-    Number(p[2]),
-    12,0,0
-  );
-
-  const hariIni=new Date(
-    n.getFullYear(),
-    n.getMonth(),
-    n.getDate(),
-    12,0,0
-  );
-
-  const selisihHari=Math.floor(
-    (hariIni-mulai)/86400000
-  );
-
-  return selisihHari>=0&&selisihHari<30;
-}
 //
 function state(n){
 
@@ -1346,9 +1312,11 @@ function state(n){
 
     // Tambahan durasi Tarawih
     const tarawihDuration=
-  k==='Isha'&&isTarawihActive(n)
-    ? +C.tarawih.duration||0
-    : 0;
+      k==='Isha' &&
+      C.tarawih &&
+      C.tarawih.active===true
+        ? +C.tarawih.duration||0
+        : 0;
 
     const te=new Date(
       re.getTime()+tarawihDuration*60000
@@ -1388,22 +1356,50 @@ function state(n){
 
     // SHOLAT TARAWIH
     if(
-  k==='Isha'&&
-  isTarawihActive(n)&&
-  n>=re&&
-  n<te
-){
-  return {
-    k:'Isha',
-    m:'tarawih',
-    e:te
-  };
-}
+      k==='Isha' &&
+      C.tarawih &&
+      C.tarawih.active===true &&
+      n>=re &&
+      n<te
+    ){
+      return {
+        k:'Isha',
+        m:'tarawih',
+        e:te
+      };
+    }
   }
 
   return null;
 }
+// Helper Traweh true
+function isTarawihActive(n){
+  if(!C.tarawih||C.tarawih.active!==true||!C.tarawih.mulai)
+    return false;
 
+  const p=C.tarawih.mulai.split('-');
+  if(p.length!==3) return false;
+
+  const mulai=new Date(
+    Number(p[0]),
+    Number(p[1])-1,
+    Number(p[2]),
+    12,0,0
+  );
+
+  const hariIni=new Date(
+    n.getFullYear(),
+    n.getMonth(),
+    n.getDate(),
+    12,0,0
+  );
+
+  const selisihHari=Math.floor(
+    (hariIni-mulai)/86400000
+  );
+
+  return selisihHari>=0&&selisihHari<30;
+}
 function stateLAMA(n){
   const p=fplan(n);
 
@@ -1802,24 +1798,12 @@ if(s.m==='done'){
       false
     );
   }
-    else if(s.m==='tarawih'){
-    const imamTarawih=
-      C.tarawih && C.tarawih.imam
-        ? 'IMAM: '+C.tarawih.imam
-        : im;
-
-    setP(
-      'SEDANG BERLANGSUNG',
-      'SHOLAT TARAWIH',
-      r,
-      imamTarawih,
-      '',
-      true,
-      true,
-      n,
-      false
-    );
-  }
+  else if(s.m==='tarawih'){
+  const imamTarawih=C.daily.Isha.imam||'';
+  const bilalTarawih=C.imam&&C.imam.BilalTaraweh?C.imam.BilalTaraweh:'';
+  const petugas='IMAM: '+imamTarawih+(bilalTarawih?'   BILAL: '+bilalTarawih:'');
+  setP('Sholat','TARAWIH',r,petugas,'',true,true,n,false);
+}
   else if(s.m==='done'){
     o.className='overlay';
   o.style.display='none';
@@ -1827,7 +1811,23 @@ if(s.m==='done'){
 }
 }
 
-function next(n){const fp=fplan(n);if(fp&&n<fp.a1)return{k:'JUMAT',d:fp.a1};for(const k of DAILY){if(n.getDay()===5&&k==='Dhuhr')continue;const d=at(n,T[k]);if(d>n)return{k,d}}const p=T.Fajr.split(':');return{k:'Fajr',d:new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,+p[0],+p[1])}}
+function next(n){
+  const fp=fplan(n);
+
+  if(n.getDay()===5){
+    const waktuJumat=fp&&fp.a1 instanceof Date&&!isNaN(fp.a1)?fp.a1:at(n,T.Dhuhr);
+    if(n<waktuJumat)return{k:'JUMAT',d:waktuJumat};
+  }
+
+  for(const k of DAILY){
+    if(n.getDay()===5&&k==='Dhuhr')continue;
+    const d=at(n,T[k]);
+    if(d>n)return{k,d};
+  }
+
+  const p=T.Fajr.split(':');
+  return{k:'Fajr',d:new Date(n.getFullYear(),n.getMonth(),n.getDate()+1,+p[0],+p[1])};
+}
 function tick(){
 const n=new Date();
 let x=next(n);
@@ -1929,7 +1929,9 @@ $('offName').innerHTML=
 const activeKey=
   modeIedHeader
     ? 'Fajr'
-    : x.k;
+    : x.k==='JUMAT'
+      ? 'Dhuhr'
+      : x.k;
 
 SHOW.forEach(k=>{
   const e=$('c'+k);
