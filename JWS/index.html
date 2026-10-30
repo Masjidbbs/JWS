@@ -22,6 +22,7 @@
   --admin-width:50vw;
   --admin-cols:4;
 }
+
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;font-family:var(--main-font),sans-serif}
 .jws{width:100vw;height:100vh;padding:1vh;background:linear-gradient(#102a3f,#020a10);display:grid;grid-template-columns:16.5vw 1fr 22.5vw;grid-template-rows:13vh 1fr 9vh 10vh;gap:.65vh .65vw}
@@ -153,30 +154,77 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
 .phbi-box{
   display:none !important;
 }
-/* FRAME AGENDA & KAS */
+// Setting KAS dan AGENDA
+/* =========================================================
+   FRAME AGENDA & KAS
+========================================================= */
+:root{
+  --cash-title-size:16px;
+  --cash-content-size:12px;
+  --cash-bg:rgba(33,150,243,.10);
+  --cash-title-bg:rgba(33,150,243,.25);
+  --cash-border:#64b5f6;
+  --cash-text:#ffffff;
+  --agenda-title-size:16px;
+  --agenda-content-size:12px;
+  --agenda-bg:rgba(33,150,243,.10);
+  --agenda-title-bg:rgba(33,150,243,.25);
+  --agenda-border:#64b5f6;
+  --agenda-text:#ffffff;
+}
 .info-box,
 .cash-box{
-  border:2px solid #64b5f6;
+  border:2px solid var(--agenda-border);
   border-radius:12px;
-  background:rgba(33,150,243,.10);
+  background:var(--agenda-bg);
   box-shadow:0 0 10px rgba(100,181,246,.25);
   overflow:hidden;
-}
-.cash-box .right-title{
-  background:rgba(33,150,243,.25);
-  color:#fff;
-  border-bottom:1px solid rgba(100,181,246,.55);
-  margin:0;
-  font-size:13px !important;
-  line-height:1.1;
-  padding:6px 6px;
-  text-align:center;
-}
-.info-box,
-.cash-box{
   min-height:0;
   height:100%;
   box-sizing:border-box;
+}
+.cash-box{
+  border-color:var(--cash-border);
+  background:var(--cash-bg);
+}
+.cash-box .right-title{
+  background:var(--cash-title-bg);
+  color:var(--cash-text);
+  border-bottom:1px solid var(--cash-border);
+  margin:0;
+  min-height:32px;
+  padding:5px 8px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  font-size:clamp(11px, var(--cash-title-size), 24px) !important;
+  line-height:1.05;
+  font-weight:800;
+}
+.info-box .right-title,
+.agenda-title{
+  background:var(--agenda-title-bg);
+  color:var(--agenda-text);
+  border-bottom:1px solid var(--agenda-border);
+  margin:0;
+  min-height:32px;
+  padding:5px 8px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  font-size:clamp(11px, var(--agenda-title-size), 24px) !important;
+  line-height:1.05;
+  font-weight:800;
 }
 .right{
   grid-column:3;
@@ -190,12 +238,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   overflow:hidden;
   min-height:0;
 }
-
 .right > .cash-box{
   flex:none !important;
   height:auto !important;
 }
-
 .right > .info-box:last-child{
   flex:1 !important;
   min-height:0 !important;
@@ -203,76 +249,104 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   display:flex !important;
   flex-direction:column;
 }
-
 .right > .info-box:last-child .agenda-frame{
   flex:1 !important;
   height:0 !important;
   min-height:0 !important;
   overflow:hidden;
 }
-  .agenda-title{
-    font-size:clamp(12px, 1.4vw, 20px);
-    font-weight:700;
-    color:#ffd54f;
-    text-align:center;
-    margin-top:6px;
+.cash-box .cash-content,
+.cash-box .cash-value,
+.cash-box .cash-row,
+.cash-box .kas-content,
+.cash-box table,
+.cash-box td,
+.cash-box th{
+  font-size:clamp(9px, var(--cash-content-size), 22px) !important;
+  line-height:1.15;
+  color:var(--cash-text);
 }
-
-/* Isi Agenda */
-.agenda-content{
-  font-size:clamp(10px, 1.0vw, 20px);
+.agenda-content,
+.agenda-scroll{
+  font-size:clamp(9px, var(--agenda-content-size), 22px) !important;
+  color:var(--agenda-text);
 }
 .agenda-container{
-    height:100%;
-    overflow:hidden;
-    position:relative;
-    padding:6px;
+  height:100%;
+  overflow:hidden;
+  position:relative;
+  padding:6px;
+  box-sizing:border-box;
 }
 .agenda-frame{
-    position:relative;
-    height:100%;
-    overflow:hidden;
-    padding:6px;
+  position:relative;
+  height:100%;
+  overflow:hidden;
+  padding:6px;
+  box-sizing:border-box;
 }
 .agenda-scroll{
-    position:relative;
-    width:100%;
-    font-size:12px;
-    line-height:1.1;
-    color:#ffffff;
-    text-align:justify;
-    text-justify:inter-word;
-    white-space:pre-line;
-    word-wrap:break-word;
-    padding-right:2px;
-	}
+  position:relative;
+  width:100%;
+  line-height:1.15;
+  text-align:justify;
+  text-justify:inter-word;
+  white-space:pre-line;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  padding-right:2px;
+  box-sizing:border-box;
+}
 .agenda-scroll-run{
-    animation:
-        agendaUp
-        20s
-        linear
-        infinite;
+  animation:agendaUp 20s linear infinite;
 }
 @keyframes agendaUp{
-    0%{
-        transform:
-            translateY(0);
-    }
-    100%{
-        transform:
-            translateY(-100%);
-    }
-}
-.info-box .right-title{
-  font-size:10px !important;
-  line-height:1.1;
-  white-space:nowrap;
-  padding:6px 6px;
-  text-align:center;
+  0%{transform:translateY(0)}
+  100%{transform:translateY(-100%)}
 }
 .overlay-hide{
   opacity:0 !important;
   transition:opacity 4.5s ease !important;
+}
+.setting-section-title{
+  grid-column:1/-1;
+  margin-top:8px;
+  padding:7px 10px;
+  border-radius:7px;
+  background:rgba(33,150,243,.20);
+  border:1px solid rgba(100,181,246,.45);
+  color:#ffd54f;
+  font-size:14px;
+  font-weight:800;
+  text-align:center;
+}
+.setting-range{
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 48px;
+  align-items:center;
+  gap:8px;
+}
+.setting-range input[type="range"]{
+  width:100%;
+  min-width:0;
+}
+.setting-range span{
+  color:#ffd54f;
+  font-size:12px;
+  font-weight:700;
+  text-align:center;
+}
+.panel input[type="color"]{
+  width:100%;
+  min-width:0;
+  height:34px;
+  padding:2px;
+  border:1px solid rgba(100,181,246,.55);
+  border-radius:6px;
+  background:#0b2f4c;
+  box-sizing:border-box;
+  cursor:pointer;
 }
 .right-title{padding:1vh;background:var(--schedule-bg);font-size:1.55vw;font-weight:900}.info-box{padding:1vh 1vw;border-bottom:2px solid var(--schedule-bg)}.info-box h3{font-size:1.45vw;margin-bottom:.6vh}.info-row{display:flex;justify-content:space-between;align-items:center;padding:.62vh 0;border-bottom:1px solid #ffffff22;font-size:1.12vw}.info-row b{font-size:1.3vw}.balance{font-size:1.9vw!important;color:#45ff74}.phbi-days{font-size:2.0vw;font-weight:900}.phbi-name{font-size:1.5vw;font-weight:900;margin-top:.7vh}.phbi-date{font-size:1vw;margin-top:.6vh;color:#dbeaff}
 .nextbar{grid-column:2;grid-row:3;display:grid;grid-template-columns:1fr auto;align-items:center;padding:0 1.2vw;background:#053c6f;font-size:1.65vw;font-weight:900}.nextbar b,.nextbar strong{color:var(--brand-color)}
@@ -449,7 +523,59 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
 <button onclick="beepWarning()">Test Warning</button>
 <button onclick="beepSholat()">Test Sholat</button>
 <button onclick="testBeepAuto()">TEST AUTO BEEP</button>
-<button onclick="testDaily()">TEST COUNTDOWN</button><button onclick="testFriday()">TEST FULL JUMAT</button><button class="close" onclick="closeSettings()">TUTUP</button></div><div id="status" class="status"></div></section>
+<button onclick="testDaily()">TEST COUNTDOWN</button><button onclick="testFriday()">TEST FULL JUMAT</button><button class="close" onclick="closeSettings()">TUTUP</button></div><div id="status" class="status"></div>
+<div class="setting-section-title">Tampilan Kas</div>
+
+<label for="cashTitleSize">Ukuran Judul Kas</label>
+<div class="setting-range">
+  <input type="range" id="cashTitleSize" min="11" max="24" step="1" value="16">
+  <span id="cashTitleSizeValue">16px</span>
+</div>
+
+<label for="cashContentSize">Ukuran Isi Kas</label>
+<div class="setting-range">
+  <input type="range" id="cashContentSize" min="9" max="22" step="1" value="12">
+  <span id="cashContentSizeValue">12px</span>
+</div>
+
+<label for="cashBgColor">Background Kas</label>
+<input type="color" id="cashBgColor" value="#0b426b">
+
+<label for="cashTitleBgColor">Background Judul Kas</label>
+<input type="color" id="cashTitleBgColor" value="#176a9d">
+
+<label for="cashBorderColor">Warna Border Kas</label>
+<input type="color" id="cashBorderColor" value="#64b5f6">
+
+<label for="cashTextColor">Warna Font Kas</label>
+<input type="color" id="cashTextColor" value="#ffffff">
+
+<div class="setting-section-title">Tampilan Agenda</div>
+
+<label for="agendaTitleSize">Ukuran Judul Agenda</label>
+<div class="setting-range">
+  <input type="range" id="agendaTitleSize" min="11" max="24" step="1" value="16">
+  <span id="agendaTitleSizeValue">16px</span>
+</div>
+
+<label for="agendaContentSize">Ukuran Isi Agenda</label>
+<div class="setting-range">
+  <input type="range" id="agendaContentSize" min="9" max="22" step="1" value="12">
+  <span id="agendaContentSizeValue">12px</span>
+</div>
+
+<label for="agendaBgColor">Background Agenda</label>
+<input type="color" id="agendaBgColor" value="#0b426b">
+
+<label for="agendaTitleBgColor">Background Judul Agenda</label>
+<input type="color" id="agendaTitleBgColor" value="#176a9d">
+
+<label for="agendaBorderColor">Warna Border Agenda</label>
+<input type="color" id="agendaBorderColor" value="#64b5f6">
+
+<label for="agendaTextColor">Warna Font Agenda</label>
+<input type="color" id="agendaTextColor" value="#ffffff">
+</section>
 <script>
 (function(){'use strict';
 const ALL=['Imsak','Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'],SHOW=['Imsak','Fajr','Dhuhr','Asr','Maghrib','Isha'],DAILY=['Fajr','Dhuhr','Asr','Maghrib','Isha'],L={Imsak:'IMSAK',Fajr:'SHUBUH',Sunrise:'SYURUQ',Dhuhr:'DZUHUR',Asr:'ASHAR',Maghrib:'MAGHRIB',Isha:'ISYA'};
@@ -482,6 +608,153 @@ let C=load(),T={},slideTimer,simTimer,sim=false,audioCtx=null,lastBeep='',previo
 window.C=C;
 console.log('DEBUG GLOBAL C:',window.C);
 function $(i){return document.getElementById(i)}function cp(o){return JSON.parse(JSON.stringify(o))}function merge(a,b){if(!b)return a;Object.keys(b).forEach(k=>a[k]=(typeof b[k]==='object'&&b[k]&&!Array.isArray(b[k]))?merge(a[k]||{},b[k]):b[k]);return a}function load(){try{const raw=localStorage.getItem('JWS_COMPLETE_V2_0')||localStorage.getItem('JWS_COMPLETE_V1_9')||localStorage.getItem('JWS_COMPLETE_V1_8')||localStorage.getItem('JWS_COMPLETE_V1_7')||localStorage.getItem('JWS_COMPLETE_V1_6');return merge(cp(DEF),JSON.parse(raw)||{})}catch(e){return cp(DEF)}}function save(){try{localStorage.setItem('JWS_COMPLETE_V2_0',JSON.stringify(C))}catch(e){$('status').innerHTML='Penyimpanan browser tidak tersedia pada mode preview.'}}function pad(v){return +v<10?'0'+(+v):String(v)}function at(d,t){const p=t.split(':');return new Date(d.getFullYear(),d.getMonth(),d.getDate(),+p[0],+p[1])}function add(t,m){const p=t.split(':'),d=new Date(2000,0,1,+p[0],+p[1]+(+m||0));return pad(d.getHours())+':'+pad(d.getMinutes())}function cd(s){s=Math.max(0,Math.ceil(s));return pad(Math.floor(s/60))+':'+pad(s%60)}function rupiah(n){return'Rp '+Number(n||0).toLocaleString('id-ID')}
+// Setting Agenda dan Kas
+const DISPLAY_BOX_DEFAULTS={
+  cashTitleSize:16,
+  cashContentSize:12,
+  cashBgColor:'#0b426b',
+  cashTitleBgColor:'#176a9d',
+  cashBorderColor:'#64b5f6',
+  cashTextColor:'#ffffff',
+  agendaTitleSize:16,
+  agendaContentSize:12,
+  agendaBgColor:'#0b426b',
+  agendaTitleBgColor:'#176a9d',
+  agendaBorderColor:'#64b5f6',
+  agendaTextColor:'#ffffff'
+};
+
+function getDisplayBoxSettings(){
+  let saved={};
+  try{
+    saved=JSON.parse(localStorage.getItem('jwsDisplayBoxSettings')||'{}');
+  }catch(e){
+    saved={};
+  }
+  return{...DISPLAY_BOX_DEFAULTS,...saved};
+}
+
+function applyDisplayBoxSettings(data){
+  const s={...DISPLAY_BOX_DEFAULTS,...data};
+  const root=document.documentElement;
+  root.style.setProperty('--cash-title-size',`${s.cashTitleSize}px`);
+  root.style.setProperty('--cash-content-size',`${s.cashContentSize}px`);
+  root.style.setProperty('--cash-bg',s.cashBgColor);
+  root.style.setProperty('--cash-title-bg',s.cashTitleBgColor);
+  root.style.setProperty('--cash-border',s.cashBorderColor);
+  root.style.setProperty('--cash-text',s.cashTextColor);
+  root.style.setProperty('--agenda-title-size',`${s.agendaTitleSize}px`);
+  root.style.setProperty('--agenda-content-size',`${s.agendaContentSize}px`);
+  root.style.setProperty('--agenda-bg',s.agendaBgColor);
+  root.style.setProperty('--agenda-title-bg',s.agendaTitleBgColor);
+  root.style.setProperty('--agenda-border',s.agendaBorderColor);
+  root.style.setProperty('--agenda-text',s.agendaTextColor);
+  fitBoxTitles();
+}
+
+function readDisplayBoxInputs(){
+  const current=getDisplayBoxSettings();
+  const val=(id,fallback)=>{
+    const el=document.getElementById(id);
+    return el?el.value:fallback;
+  };
+  return{
+    cashTitleSize:Number(val('cashTitleSize',current.cashTitleSize)),
+    cashContentSize:Number(val('cashContentSize',current.cashContentSize)),
+    cashBgColor:val('cashBgColor',current.cashBgColor),
+    cashTitleBgColor:val('cashTitleBgColor',current.cashTitleBgColor),
+    cashBorderColor:val('cashBorderColor',current.cashBorderColor),
+    cashTextColor:val('cashTextColor',current.cashTextColor),
+    agendaTitleSize:Number(val('agendaTitleSize',current.agendaTitleSize)),
+    agendaContentSize:Number(val('agendaContentSize',current.agendaContentSize)),
+    agendaBgColor:val('agendaBgColor',current.agendaBgColor),
+    agendaTitleBgColor:val('agendaTitleBgColor',current.agendaTitleBgColor),
+    agendaBorderColor:val('agendaBorderColor',current.agendaBorderColor),
+    agendaTextColor:val('agendaTextColor',current.agendaTextColor)
+  };
+}
+
+function fillDisplayBoxInputs(data){
+  const s={...DISPLAY_BOX_DEFAULTS,...data};
+  Object.entries(s).forEach(([id,value])=>{
+    const el=document.getElementById(id);
+    if(el)el.value=value;
+  });
+  updateDisplayBoxLabels();
+}
+
+function updateDisplayBoxLabels(){
+  const ids=['cashTitleSize','cashContentSize','agendaTitleSize','agendaContentSize'];
+  ids.forEach(id=>{
+    const input=document.getElementById(id);
+    const output=document.getElementById(`${id}Value`);
+    if(input&&output)output.textContent=`${input.value}px`;
+  });
+}
+
+function previewDisplayBoxSettings(){
+  const data=readDisplayBoxInputs();
+  updateDisplayBoxLabels();
+  applyDisplayBoxSettings(data);
+}
+
+function saveDisplayBoxSettings(){
+  const data=readDisplayBoxInputs();
+  localStorage.setItem('jwsDisplayBoxSettings',JSON.stringify(data));
+  applyDisplayBoxSettings(data);
+  console.log('Tampilan Agenda dan Kas tersimpan:',data);
+}
+
+function resetDisplayBoxSettings(){
+  localStorage.removeItem('jwsDisplayBoxSettings');
+  fillDisplayBoxInputs(DISPLAY_BOX_DEFAULTS);
+  applyDisplayBoxSettings(DISPLAY_BOX_DEFAULTS);
+}
+
+function fitBoxTitle(el,preferredSize){
+  if(!el)return;
+  const minSize=11;
+  let size=Math.max(minSize,Number(preferredSize)||16);
+  el.style.fontSize=`${size}px`;
+  while(size>minSize&&(el.scrollWidth>el.clientWidth||el.scrollHeight>el.clientHeight)){
+    size--;
+    el.style.fontSize=`${size}px`;
+  }
+}
+
+function fitBoxTitles(){
+  requestAnimationFrame(()=>{
+    const s=getDisplayBoxSettings();
+    document.querySelectorAll('.cash-box .right-title').forEach(el=>{
+      fitBoxTitle(el,s.cashTitleSize);
+    });
+    document.querySelectorAll('.info-box .right-title,.agenda-title').forEach(el=>{
+      fitBoxTitle(el,s.agendaTitleSize);
+    });
+  });
+}
+
+function initDisplayBoxSettings(){
+  const saved=getDisplayBoxSettings();
+  fillDisplayBoxInputs(saved);
+  applyDisplayBoxSettings(saved);
+  const ids=[
+    'cashTitleSize','cashContentSize','cashBgColor',
+    'cashTitleBgColor','cashBorderColor','cashTextColor',
+    'agendaTitleSize','agendaContentSize','agendaBgColor',
+    'agendaTitleBgColor','agendaBorderColor','agendaTextColor'
+  ];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener('input',previewDisplayBoxSettings);
+    el.addEventListener('change',previewDisplayBoxSettings);
+  });
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  initDisplayBoxSettings();
+});
+window.addEventListener('resize',fitBoxTitles);
 //let audioCtx=null;
 function ensureAudio(){
   try{
@@ -1928,7 +2201,85 @@ window.loadPrayerLocation=function(){const g=C.g,d=new Date(),ds=pad(d.getDate()
 function card(v){return'<div class="card">'+v+'</div>'}function inp(l,i,v,t,e){return'<label>'+l+'</label><input type="'+(t||'text')+'" id="'+i+'" value="'+String(v).replace(/"/g,'&quot;')+'" '+(e||'')+'>'}function sel(l,i,A,v){return'<label>'+l+'</label><select id="'+i+'">'+A.map(x=>'<option'+(x===v?' selected':'')+'>'+x+'</option>').join('')+'</select>'}function correctionControl(key,value){return'<label>Koreksi Menit</label><div class="correction-control"><button type="button" onclick="stepCorrection(\''+key+'\',-1)">−</button><input type="number" step="1" id="c'+key+'" value="'+value+'"><button type="button" onclick="stepCorrection(\''+key+'\',1)">+</button></div>'}window.stepCorrection=function(key,delta){const input=$('c'+key);input.value=Number(input.value||0)+delta;C.corr[key]=Number(input.value);T[key]=add(C.base[key],C.corr[key]);const schedule=$('c'+key);if(schedule){const value=schedule.querySelector('b');if(value)value.innerHTML=T[key]}};
 function forms(){const g=C.g,a=C.admin;$('p0').innerHTML=card(inp('Nama Masjid','gName',g.name)+inp('Nama Lokasi','gLoc',g.loc)+inp('Latitude','gLat',g.lat,'number')+inp('Longitude','gLon',g.lon,'number')+inp('Timezone','gZone',g.zone))+card(sel('Mode Jadwal','gMode',['MANUAL','AUTO'],g.mode)+inp('Metode Hisab','gMethod',g.method,'number')+inp('Koreksi Hijriah','gHijri',g.hijri,'number')+inp('Nama File Logo','gLogo',g.logo))+card(inp('Font Lokasi','gLF',g.locFont)+inp('Ukuran Lokasi','gLS',g.locSize,'number')+inp('Warna Lokasi','gLC',g.locColor,'color'));let h='';ALL.forEach(k=>h+=card('<h3>'+namaSholat(k)+'</h3>'+inp('Waktu Dasar','b'+k,C.base[k])+correctionControl(k,C.corr[k])));$('p1').innerHTML=h;$('p2').innerHTML=card(sel('Font Utama','gFont',['Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Courier New'],g.font)+inp('Ukuran Running Text','gTS',g.tickerSize,'number')+inp('Warna Header','gHeader',g.header,'color')+inp('Warna Nama Masjid & Jam Jadwal','gBrand',g.brand,'color')+inp('Warna Jam Header','gClock',g.clock,'color')+inp('Warna Running Text','gTickerColor',g.tickerColor,'color')+inp('Warna Kotak Jadwal','gSchedule',g.schedule,'color'))+card('<label>Running Text Normal</label><textarea id="gTicker">'+g.ticker+'</textarea><label>Running Text Saat Menunggu Iqamah</label><textarea id="gIqTicker">'+g.iqamahTicker+'</textarea>')+card(sel('Beep Aktif','gBeep',['YA','TIDAK'],g.beepEnabled?'YA':'TIDAK')+inp('Beep Sebelum Adzan (detik)','gBeepBefore',g.beepBefore,'number')+inp('Frekuensi Beep','gBeepFreq',g.beepFreq,'number')+inp('Durasi Beep','gBeepDuration',g.beepDuration,'number')+inp('Volume Beep','gBeepVolume',g.beepVolume,'number'));$('p3').innerHTML=card('<label>Daftar Gambar</label><textarea id="gSlides">'+g.slides+'</textarea>'+inp('Interval','gSec',g.seconds,'number'));$('p4').innerHTML=card('<p>Petugas yang tampil hanya untuk shalat berikutnya.</p>');h='';DAILY.forEach(k=>{const p=C.daily[k];h+=card('<h3>'+namaSholat(k)+'</h3>'+inp('Imam','i'+k,p.imam)+inp('Menjelang Adzan','pre'+k,p.pre,'number')+inp('Iqamah','iq'+k,p.iqamah,'number')+inp('Durasi Shalat','pr'+k,p.prayer,'number')+inp('Rawatib','rw'+k,p.rawatib,'number'))});$('p5').innerHTML=h;const f=C.fri;$('p6').innerHTML=card(inp('Waktu Adzan 1','fFirst',f.first)+inp('Menjelang','fPre',f.pre,'number')+inp('Durasi Adzan 1','fA1',f.a1,'number')+inp('Jeda Adzan 2','fWait',f.wait,'number')+inp('Durasi Adzan 2','fA2',f.a2,'number')+inp('Khutbah','fKh',f.khutbah,'number')+inp('Shalat','fPr',f.prayer,'number')+inp('Rawatib','fRw',f.rawatib,'number')+inp('Khatib','fKhatib',f.khatib)+inp('Imam','fImam',f.imam)+inp('Bilal','fBilal',f.bilal));$('p7').innerHTML=card(inp('Nama PHBI','phName',C.phbi.name)+inp('Tanggal PHBI','phDate',C.phbi.date,'date')+'<label>Keterangan</label><textarea id="phNote">'+C.phbi.note+'</textarea>');const end=+C.cash.opening+(+C.cash.income)-(+C.cash.expense);$('p8').innerHTML=card(inp('Periode Kas','cashPeriod',C.cash.period)+inp('Saldo Awal','cashOpening',C.cash.opening,'number')+inp('Pemasukan','cashIncome',C.cash.income,'number')+inp('Pengeluaran','cashExpense',C.cash.expense,'number')+inp('Saldo Akhir','cashBalance',rupiah(end),'text','readonly'));$('p9').innerHTML=card(sel('Mode Admin','aMode',['AUTO','HP','TV'],a.mode)+inp('Lebar Panel','aWidth',a.width,'number')+inp('Kolom','aCols',a.cols,'number'))+card(inp('Judul','aTitle',a.title,'number')+inp('Label','aLabel',a.label,'number')+inp('Input','aInput',a.input,'number')+inp('Tombol','aButton',a.button,'number'))}
 window.openSettings=function(){forms();$('panel').className='panel show'};window.closeSettings=function(){$('panel').className='panel'};window.tab=function(n,b){document.querySelectorAll('.page').forEach(e=>e.className='page');document.querySelectorAll('.tabs button').forEach(e=>e.className='');document.querySelectorAll('.page')[n].className='page on';b.className='on'};
-window.saveSettings=function(){const g=C.g,a=C.admin,f=C.fri;g.name=$('gName').value;g.loc=$('gLoc').value;g.lat=+$('gLat').value;g.lon=+$('gLon').value;g.zone=$('gZone').value;g.mode=$('gMode').value;g.method=+$('gMethod').value;g.hijri=+$('gHijri').value;g.logo=$('gLogo').value;if(pendingLogoData)g.logoData=pendingLogoData;g.locFont=$('gLF').value;g.locSize=+$('gLS').value;g.locColor=$('gLC').value;g.font=$('gFont').value;g.tickerSize=+$('gTS').value;g.header=$('gHeader').value;g.brand=$('gBrand').value;g.clock=$('gClock').value;g.tickerColor=$('gTickerColor').value;g.schedule=$('gSchedule').value;g.ticker=$('gTicker').value;g.iqamahTicker=$('gIqTicker').value;g.beepEnabled=$('gBeep').value==='YA';g.beepBefore=+$('gBeepBefore').value;g.beepFreq=+$('gBeepFreq').value;g.beepDuration=+$('gBeepDuration').value;g.beepVolume=+$('gBeepVolume').value;g.slides=$('gSlides').value;g.seconds=+$('gSec').value;ALL.forEach(k=>{C.base[k]=$('b'+k).value;C.corr[k]=Number($('c'+k).value||0)});DAILY.forEach(k=>C.daily[k]={imam:$('i'+k).value,pre:+$('pre'+k).value,iqamah:+$('iq'+k).value,prayer:+$('pr'+k).value,rawatib:+$('rw'+k).value});f.first=$('fFirst').value;f.pre=+$('fPre').value;f.a1=+$('fA1').value;f.wait=+$('fWait').value;f.a2=+$('fA2').value;f.khutbah=+$('fKh').value;f.prayer=+$('fPr').value;f.rawatib=+$('fRw').value;f.khatib=$('fKhatib').value;f.imam=$('fImam').value;f.bilal=$('fBilal').value;C.phbi.name=$('phName').value;C.phbi.date=$('phDate').value;C.phbi.note=$('phNote').value;C.cash.period=$('cashPeriod').value;C.cash.opening=+$('cashOpening').value;C.cash.income=+$('cashIncome').value;C.cash.expense=+$('cashExpense').value;a.mode=$('aMode').value;a.width=+$('aWidth').value;a.cols=+$('aCols').value;a.title=+$('aTitle').value;a.label=+$('aLabel').value;a.input=+$('aInput').value;a.button=+$('aButton').value;save();apply();closeSettings()};
+window.saveSettings=function(){
+  const g=C.g,a=C.admin,f=C.fri;
+  g.name=$('gName').value;
+  g.loc=$('gLoc').value;
+  g.lat=+$('gLat').value;
+  g.lon=+$('gLon').value;
+  g.zone=$('gZone').value;
+  g.mode=$('gMode').value;
+  g.method=+$('gMethod').value;
+  g.hijri=+$('gHijri').value;
+  g.logo=$('gLogo').value;
+  if(pendingLogoData)g.logoData=pendingLogoData;
+  g.locFont=$('gLF').value;
+  g.locSize=+$('gLS').value;
+  g.locColor=$('gLC').value;
+  g.font=$('gFont').value;
+  g.tickerSize=+$('gTS').value;
+  g.header=$('gHeader').value;
+  g.brand=$('gBrand').value;
+  g.clock=$('gClock').value;
+  g.tickerColor=$('gTickerColor').value;
+  g.schedule=$('gSchedule').value;
+  g.ticker=$('gTicker').value;
+  g.iqamahTicker=$('gIqTicker').value;
+  g.beepEnabled=$('gBeep').value==='YA';
+  g.beepBefore=+$('gBeepBefore').value;
+  g.beepFreq=+$('gBeepFreq').value;
+  g.beepDuration=+$('gBeepDuration').value;
+  g.beepVolume=+$('gBeepVolume').value;
+  g.slides=$('gSlides').value;
+  g.seconds=+$('gSec').value;
+
+  ALL.forEach(k=>{
+    C.base[k]=$('b'+k).value;
+    C.corr[k]=Number($('c'+k).value||0);
+  });
+
+  DAILY.forEach(k=>C.daily[k]={
+    imam:$('i'+k).value,
+    pre:+$('pre'+k).value,
+    iqamah:+$('iq'+k).value,
+    prayer:+$('pr'+k).value,
+    rawatib:+$('rw'+k).value
+  });
+
+  f.first=$('fFirst').value;
+  f.pre=+$('fPre').value;
+  f.a1=+$('fA1').value;
+  f.wait=+$('fWait').value;
+  f.a2=+$('fA2').value;
+  f.khutbah=+$('fKh').value;
+  f.prayer=+$('fPr').value;
+  f.rawatib=+$('fRw').value;
+  f.khatib=$('fKhatib').value;
+  f.imam=$('fImam').value;
+  f.bilal=$('fBilal').value;
+
+  C.phbi.name=$('phName').value;
+  C.phbi.date=$('phDate').value;
+  C.phbi.note=$('phNote').value;
+
+  C.cash.period=$('cashPeriod').value;
+  C.cash.opening=+$('cashOpening').value;
+  C.cash.income=+$('cashIncome').value;
+  C.cash.expense=+$('cashExpense').value;
+
+  a.mode=$('aMode').value;
+  a.width=+$('aWidth').value;
+  a.cols=+$('aCols').value;
+  a.title=+$('aTitle').value;
+  a.label=+$('aLabel').value;
+  a.input=+$('aInput').value;
+  a.button=+$('aButton').value;
+
+  saveDisplayBoxSettings();
+  save();
+  apply();
+  closeSettings();
+};
 window.testDaily=function(){
   closeSettings();
   sim=true;
@@ -1988,7 +2339,6 @@ var tickerBusy = false;
 var lastTickerRender = 0;
 var pendingTickerText = '';
 var currentTickerText = '';
-
 //
 function refreshTicker(){
 
