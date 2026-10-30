@@ -433,7 +433,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#010b15;color:#fff;f
   white-space:nowrap;
 }
 
-.panel{position:fixed;top:2vh;left:calc((100vw - var(--admin-width))/2);z-index:60;display:none;width:var(--admin-width);max-height:96vh;overflow:auto;padding:1.2vw;background:#111a2b;border:2px solid var(--brand-color)}.panel.show{display:block}.panel h2,.card h3{font-size:var(--admin-title)}.tabs{display:flex;flex-wrap:wrap;gap:.4vw;margin:1vh 0}.tabs button,.actions button,.card button{min-height:46px;padding:11px 15px;border:0;background:#435476;color:#fff;font-size:var(--admin-button);font-weight:700}.tabs button.on,.actions .save{background:var(--brand-color);color:#111}.actions .close{background:#8b302b}.page{display:none}.page.on{display:block}.grid{display:grid;grid-template-columns:repeat(var(--admin-cols),minmax(0,1fr));gap:.7vw}.card{padding:.8vw;background:#202b42}.card label{display:block;margin-top:.6vh;font-size:var(--admin-label);font-weight:700}.card input,.card select,.card textarea{width:100%;min-height:44px;padding:9px;font-size:var(--admin-input)}.card textarea{min-height:90px}.card p{margin-top:10px;line-height:1.4}.correction-control{display:grid;grid-template-columns:48px 1fr 48px;gap:6px;align-items:center}.correction-control button{padding:0;min-height:44px;font-size:26px}.correction-control input{text-align:center}.actions{display:flex;flex-wrap:wrap;gap:.6vw;margin-top:1vh}.status{font-size:var(--admin-label);color:#aee8ff;margin-top:8px}@media(max-width:900px){.grid{grid-template-columns:1fr}.phase-count{font-size:18vw}}
+.panel{position:fixed;top:2vh;left:calc((100vw - var(--admin-width))/2);z-index:60;display:none;width:var(--admin-width);max-height:96vh;overflow:auto;padding:1.2vw;background:#111a2b;border:2px solid var(--brand-color);zoom:.8}
+.panel.show{display:block}.panel h2,.card h3{font-size:var(--admin-title)}.tabs{display:flex;flex-wrap:wrap;gap:.4vw;margin:1vh 0}.tabs button,.actions button,.card button{min-height:46px;padding:11px 15px;border:0;background:#435476;color:#fff;font-size:var(--admin-button);font-weight:700}.tabs button.on,.actions .save{background:var(--brand-color);color:#111}.actions .close{background:#8b302b}.page{display:none}.page.on{display:block}.grid{display:grid;grid-template-columns:repeat(var(--admin-cols),minmax(0,1fr));gap:.7vw}.card{padding:.8vw;background:#202b42}.card label{display:block;margin-top:.6vh;font-size:var(--admin-label);font-weight:700}.card input,.card select,.card textarea{width:100%;min-height:44px;padding:9px;font-size:var(--admin-input)}.card textarea{min-height:90px}.card p{margin-top:10px;line-height:1.4}.correction-control{display:grid;grid-template-columns:48px 1fr 48px;gap:6px;align-items:center}.correction-control button{padding:0;min-height:44px;font-size:26px}.correction-control input{text-align:center}.actions{display:flex;flex-wrap:wrap;gap:.6vw;margin-top:1vh}.status{font-size:var(--admin-label);color:#aee8ff;margin-top:8px}@media(max-width:900px){.grid{grid-template-columns:1fr}.phase-count{font-size:18vw}}
+/* SCALE PANEL SETTING */
+.panel{
+  zoom:.8;
+}
 </style>
 </head>
 <body>
@@ -1150,9 +1155,72 @@ function showOverlayAnimated(el){
   el.style.opacity='1';
   el.style.transform='translate(-50%,-50%)';
 }
-function apply(){console.log("APPLY DIJALANKAN");const r=document.documentElement,g=C.g,a=C.admin;r.style.setProperty('--header-bg',g.header);r.style.setProperty('--brand-color',g.brand);r.style.setProperty('--clock-color',g.clock);r.style.setProperty('--ticker-color',g.tickerColor);r.style.setProperty('--schedule-bg',g.schedule);r.style.setProperty('--main-font',g.font);r.style.setProperty('--ticker-size',g.tickerSize+'vw');r.style.setProperty('--location-size',g.locSize+'vw');r.style.setProperty('--admin-title',a.title+'px');r.style.setProperty('--admin-label',a.label+'px');r.style.setProperty('--admin-input',a.input+'px');r.style.setProperty('--admin-button',a.button+'px');r.style.setProperty('--admin-width',a.width+'vw');r.style.setProperty('--admin-cols',a.mode==='HP'?1:(a.mode==='AUTO'&&innerWidth<900?1:a.cols));$('masjid').innerHTML=g.name;$('lokasi').innerHTML ='<img src="pin.png" class="loc-icon"> ' +
-  C.g.loc;$('lokasi').style.fontFamily=g.locFont;$('lokasi').style.color=g.locColor;$('ticker').innerHTML=g.ticker;$('iqTicker').innerHTML=g.iqamahTicker;
-  const logo=$('logo');logo.style.display='none';logo.onload=function(){logo.style.display='block'};logo.onerror=function(){logo.style.display='none'};logo.src='Logomasjid.png';ALL.forEach(k=>T[k]=add(C.base[k],Number(C.corr[k]||0)));cards();information();slides()}
+function apply(){
+  console.log("APPLY DIJALANKAN");
+
+  const r=document.documentElement;
+  const g=C.g;
+  const a=C.admin;
+
+  // WARNA & TAMPILAN UTAMA
+  r.style.setProperty('--header-bg',g.header);
+  r.style.setProperty('--brand-color',g.brand);
+  r.style.setProperty('--clock-color',g.clock);
+  r.style.setProperty('--ticker-color',g.tickerColor);
+  r.style.setProperty('--schedule-bg',g.schedule);
+  r.style.setProperty('--main-font',g.font);
+  r.style.setProperty('--ticker-size',g.tickerSize+'vw');
+  r.style.setProperty('--location-size',g.locSize+'vw');
+
+  // ADMIN PANEL
+  r.style.setProperty('--admin-title',a.title+'px');
+  r.style.setProperty('--admin-label',a.label+'px');
+  r.style.setProperty('--admin-input',a.input+'px');
+  r.style.setProperty('--admin-button',a.button+'px');
+  r.style.setProperty('--admin-width',a.width+'vw');
+  r.style.setProperty(
+    '--admin-cols',
+    a.mode==='HP' ? 1 : (a.mode==='AUTO' && innerWidth<900 ? 1 : a.cols)
+  );
+
+  // ZOOM PANEL ADMIN
+  $('panel').style.zoom=a.zoom||0.8;
+
+  // IDENTITAS MASJID
+  $('masjid').innerHTML=g.name;
+
+  $('lokasi').innerHTML='<img src="pin.png" class="loc-icon"> '+C.g.loc;
+  $('lokasi').style.fontFamily=g.locFont;
+  $('lokasi').style.color=g.locColor;
+
+  // TICKER
+  $('ticker').innerHTML=g.ticker;
+  $('iqTicker').innerHTML=g.iqamahTicker;
+
+  // LOGO
+  const logo=$('logo');
+  logo.style.display='none';
+
+  logo.onload=function(){
+    logo.style.display='block';
+  };
+
+  logo.onerror=function(){
+    logo.style.display='none';
+  };
+
+  logo.src='Logomasjid.png';
+
+  // UPDATE JADWAL
+  ALL.forEach(k=>{
+    T[k]=add(C.base[k],Number(C.corr[k]||0));
+  });
+
+  cards();
+  information();
+  slides();
+}
+
 function cards(){
   let h='';
   const now=new Date();
@@ -2205,7 +2273,7 @@ if(!s){
 }
 window.loadPrayerLocation=function(){const g=C.g,d=new Date(),ds=pad(d.getDate())+'-'+pad(d.getMonth()+1)+'-'+d.getFullYear();$('status').innerHTML='Mengambil jadwal lokasi...';const url='https://api.aladhan.com/v1/timings/'+ds+'?latitude='+encodeURIComponent(g.lat)+'&longitude='+encodeURIComponent(g.lon)+'&method='+encodeURIComponent(g.method)+'&school=0&timezonestring='+encodeURIComponent(g.zone),x=new XMLHttpRequest();x.open('GET',url,true);x.timeout=12000;x.onreadystatechange=function(){if(x.readyState!==4)return;if(x.status>=200&&x.status<300){try{const data=JSON.parse(x.responseText).data.timings;ALL.forEach(k=>{const m=String(data[k]||'').match(/\d{1,2}:\d{2}/);if(m)C.base[k]=m[0].padStart(5,'0')});save();apply();forms();$('status').innerHTML='Jadwal lokasi berhasil diperbarui.'}catch(e){$('status').innerHTML='Data jadwal tidak dapat dibaca.'}}else $('status').innerHTML='Gagal mengambil jadwal; jadwal lama tetap dipakai.'};x.send()};
 function card(v){return'<div class="card">'+v+'</div>'}function inp(l,i,v,t,e){return'<label>'+l+'</label><input type="'+(t||'text')+'" id="'+i+'" value="'+String(v).replace(/"/g,'&quot;')+'" '+(e||'')+'>'}function sel(l,i,A,v){return'<label>'+l+'</label><select id="'+i+'">'+A.map(x=>'<option'+(x===v?' selected':'')+'>'+x+'</option>').join('')+'</select>'}function correctionControl(key,value){return'<label>Koreksi Menit</label><div class="correction-control"><button type="button" onclick="stepCorrection(\''+key+'\',-1)">−</button><input type="number" step="1" id="c'+key+'" value="'+value+'"><button type="button" onclick="stepCorrection(\''+key+'\',1)">+</button></div>'}window.stepCorrection=function(key,delta){const input=$('c'+key);input.value=Number(input.value||0)+delta;C.corr[key]=Number(input.value);T[key]=add(C.base[key],C.corr[key]);const schedule=$('c'+key);if(schedule){const value=schedule.querySelector('b');if(value)value.innerHTML=T[key]}};
-function forms(){const g=C.g,a=C.admin;$('p0').innerHTML=card(inp('Nama Masjid','gName',g.name)+inp('Nama Lokasi','gLoc',g.loc)+inp('Latitude','gLat',g.lat,'number')+inp('Longitude','gLon',g.lon,'number')+inp('Timezone','gZone',g.zone))+card(sel('Mode Jadwal','gMode',['MANUAL','AUTO'],g.mode)+inp('Metode Hisab','gMethod',g.method,'number')+inp('Koreksi Hijriah','gHijri',g.hijri,'number')+inp('Nama File Logo','gLogo',g.logo))+card(inp('Font Lokasi','gLF',g.locFont)+inp('Ukuran Lokasi','gLS',g.locSize,'number')+inp('Warna Lokasi','gLC',g.locColor,'color'));let h='';ALL.forEach(k=>h+=card('<h3>'+namaSholat(k)+'</h3>'+inp('Waktu Dasar','b'+k,C.base[k])+correctionControl(k,C.corr[k])));$('p1').innerHTML=h;$('p2').innerHTML=card(sel('Font Utama','gFont',['Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Courier New'],g.font)+inp('Ukuran Running Text','gTS',g.tickerSize,'number')+inp('Warna Header','gHeader',g.header,'color')+inp('Warna Nama Masjid & Jam Jadwal','gBrand',g.brand,'color')+inp('Warna Jam Header','gClock',g.clock,'color')+inp('Warna Running Text','gTickerColor',g.tickerColor,'color')+inp('Warna Kotak Jadwal','gSchedule',g.schedule,'color'))+card('<label>Running Text Normal</label><textarea id="gTicker">'+g.ticker+'</textarea><label>Running Text Saat Menunggu Iqamah</label><textarea id="gIqTicker">'+g.iqamahTicker+'</textarea>')+card(sel('Beep Aktif','gBeep',['YA','TIDAK'],g.beepEnabled?'YA':'TIDAK')+inp('Beep Sebelum Adzan (detik)','gBeepBefore',g.beepBefore,'number')+inp('Frekuensi Beep','gBeepFreq',g.beepFreq,'number')+inp('Durasi Beep','gBeepDuration',g.beepDuration,'number')+inp('Volume Beep','gBeepVolume',g.beepVolume,'number'));$('p3').innerHTML=card('<label>Daftar Gambar</label><textarea id="gSlides">'+g.slides+'</textarea>'+inp('Interval','gSec',g.seconds,'number'));$('p4').innerHTML=card('<p>Petugas yang tampil hanya untuk shalat berikutnya.</p>');h='';DAILY.forEach(k=>{const p=C.daily[k];h+=card('<h3>'+namaSholat(k)+'</h3>'+inp('Imam','i'+k,p.imam)+inp('Menjelang Adzan','pre'+k,p.pre,'number')+inp('Iqamah','iq'+k,p.iqamah,'number')+inp('Durasi Shalat','pr'+k,p.prayer,'number')+inp('Rawatib','rw'+k,p.rawatib,'number'))});$('p5').innerHTML=h;const f=C.fri;$('p6').innerHTML=card(inp('Waktu Adzan 1','fFirst',f.first)+inp('Menjelang','fPre',f.pre,'number')+inp('Durasi Adzan 1','fA1',f.a1,'number')+inp('Jeda Adzan 2','fWait',f.wait,'number')+inp('Durasi Adzan 2','fA2',f.a2,'number')+inp('Khutbah','fKh',f.khutbah,'number')+inp('Shalat','fPr',f.prayer,'number')+inp('Rawatib','fRw',f.rawatib,'number')+inp('Khatib','fKhatib',f.khatib)+inp('Imam','fImam',f.imam)+inp('Bilal','fBilal',f.bilal));$('p7').innerHTML=card(inp('Nama PHBI','phName',C.phbi.name)+inp('Tanggal PHBI','phDate',C.phbi.date,'date')+'<label>Keterangan</label><textarea id="phNote">'+C.phbi.note+'</textarea>');const end=+C.cash.opening+(+C.cash.income)-(+C.cash.expense);$('p8').innerHTML=card(inp('Periode Kas','cashPeriod',C.cash.period)+inp('Saldo Awal','cashOpening',C.cash.opening,'number')+inp('Pemasukan','cashIncome',C.cash.income,'number')+inp('Pengeluaran','cashExpense',C.cash.expense,'number')+inp('Saldo Akhir','cashBalance',rupiah(end),'text','readonly'));$('p9').innerHTML=card(sel('Mode Admin','aMode',['AUTO','HP','TV'],a.mode)+inp('Lebar Panel','aWidth',a.width,'number')+inp('Kolom','aCols',a.cols,'number'))+card(inp('Judul','aTitle',a.title,'number')+inp('Label','aLabel',a.label,'number')+inp('Input','aInput',a.input,'number')+inp('Tombol','aButton',a.button,'number'))}
+function forms(){const g=C.g,a=C.admin;$('p0').innerHTML=card(inp('Nama Masjid','gName',g.name)+inp('Nama Lokasi','gLoc',g.loc)+inp('Latitude','gLat',g.lat,'number')+inp('Longitude','gLon',g.lon,'number')+inp('Timezone','gZone',g.zone))+card(sel('Mode Jadwal','gMode',['MANUAL','AUTO'],g.mode)+inp('Metode Hisab','gMethod',g.method,'number')+inp('Koreksi Hijriah','gHijri',g.hijri,'number')+inp('Nama File Logo','gLogo',g.logo))+card(inp('Font Lokasi','gLF',g.locFont)+inp('Ukuran Lokasi','gLS',g.locSize,'number')+inp('Warna Lokasi','gLC',g.locColor,'color'));let h='';ALL.forEach(k=>h+=card('<h3>'+namaSholat(k)+'</h3>'+inp('Waktu Dasar','b'+k,C.base[k])+correctionControl(k,C.corr[k])));$('p1').innerHTML=h;$('p2').innerHTML=card(sel('Font Utama','gFont',['Arial','Verdana','Tahoma','Trebuchet MS','Georgia','Courier New'],g.font)+inp('Ukuran Running Text','gTS',g.tickerSize,'number')+inp('Warna Header','gHeader',g.header,'color')+inp('Warna Nama Masjid & Jam Jadwal','gBrand',g.brand,'color')+inp('Warna Jam Header','gClock',g.clock,'color')+inp('Warna Running Text','gTickerColor',g.tickerColor,'color')+inp('Warna Kotak Jadwal','gSchedule',g.schedule,'color'))+card('<label>Running Text Normal</label><textarea id="gTicker">'+g.ticker+'</textarea><label>Running Text Saat Menunggu Iqamah</label><textarea id="gIqTicker">'+g.iqamahTicker+'</textarea>')+card(sel('Beep Aktif','gBeep',['YA','TIDAK'],g.beepEnabled?'YA':'TIDAK')+inp('Beep Sebelum Adzan (detik)','gBeepBefore',g.beepBefore,'number')+inp('Frekuensi Beep','gBeepFreq',g.beepFreq,'number')+inp('Durasi Beep','gBeepDuration',g.beepDuration,'number')+inp('Volume Beep','gBeepVolume',g.beepVolume,'number'));$('p3').innerHTML=card('<label>Daftar Gambar</label><textarea id="gSlides">'+g.slides+'</textarea>'+inp('Interval','gSec',g.seconds,'number'));$('p4').innerHTML=card('<p>Petugas yang tampil hanya untuk shalat berikutnya.</p>');h='';DAILY.forEach(k=>{const p=C.daily[k];h+=card('<h3>'+namaSholat(k)+'</h3>'+inp('Imam','i'+k,p.imam)+inp('Menjelang Adzan','pre'+k,p.pre,'number')+inp('Iqamah','iq'+k,p.iqamah,'number')+inp('Durasi Shalat','pr'+k,p.prayer,'number')+inp('Rawatib','rw'+k,p.rawatib,'number'))});$('p5').innerHTML=h;const f=C.fri;$('p6').innerHTML=card(inp('Waktu Adzan 1','fFirst',f.first)+inp('Menjelang','fPre',f.pre,'number')+inp('Durasi Adzan 1','fA1',f.a1,'number')+inp('Jeda Adzan 2','fWait',f.wait,'number')+inp('Durasi Adzan 2','fA2',f.a2,'number')+inp('Khutbah','fKh',f.khutbah,'number')+inp('Shalat','fPr',f.prayer,'number')+inp('Rawatib','fRw',f.rawatib,'number')+inp('Khatib','fKhatib',f.khatib)+inp('Imam','fImam',f.imam)+inp('Bilal','fBilal',f.bilal));$('p7').innerHTML=card(inp('Nama PHBI','phName',C.phbi.name)+inp('Tanggal PHBI','phDate',C.phbi.date,'date')+'<label>Keterangan</label><textarea id="phNote">'+C.phbi.note+'</textarea>');const end=+C.cash.opening+(+C.cash.income)-(+C.cash.expense);$('p8').innerHTML=card(inp('Periode Kas','cashPeriod',C.cash.period)+inp('Saldo Awal','cashOpening',C.cash.opening,'number')+inp('Pemasukan','cashIncome',C.cash.income,'number')+inp('Pengeluaran','cashExpense',C.cash.expense,'number')+inp('Saldo Akhir','cashBalance',rupiah(end),'text','readonly'));$('p9').innerHTML=card(sel('Mode Admin','aMode',['AUTO','HP','TV'],a.mode)+inp('Lebar Panel','aWidth',a.width,'number')+inp('Kolom','aCols',a.cols,'number')+sel('Zoom Panel','aZoom',['0.70','0.75','0.80','0.85','0.90','0.95','1'],String(a.zoom||0.80)))+card(inp('Judul','aTitle',a.title,'number')+inp('Label','aLabel',a.label,'number')+inp('Input','aInput',a.input,'number')+inp('Tombol','aButton',a.button,'number'))}
 window.openSettings=function(){forms();$('panel').className='panel show'};window.closeSettings=function(){$('panel').className='panel'};window.tab=function(n,b){document.querySelectorAll('.page').forEach(e=>e.className='page');document.querySelectorAll('.tabs button').forEach(e=>e.className='');document.querySelectorAll('.page')[n].className='page on';b.className='on'};
 window.saveSettings=function(){
   const g=C.g,a=C.admin,f=C.fri;
@@ -2276,6 +2344,7 @@ window.saveSettings=function(){
   a.mode=$('aMode').value;
   a.width=+$('aWidth').value;
   a.cols=+$('aCols').value;
+  a.zoom=+$('aZoom').value;
   a.title=+$('aTitle').value;
   a.label=+$('aLabel').value;
   a.input=+$('aInput').value;
