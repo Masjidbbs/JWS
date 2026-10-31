@@ -1421,13 +1421,13 @@
             Imsak: 0, Fajr: 0, Sunrise: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0
           }, daily: {
             Fajr: {
-              imam: 'Ustadz Ahmad', pre: 1, iqamah: 10, prayer: 10, rawatib: 0
+              imam: 'Ustadz Ahmad', pre: 1, iqamah: 10, prayer: 10
             }, Dhuhr: {
               imam: 'Ustadz Ahmad', pre: 1, iqamah: 10, prayer: 10, rawatib: 5
             }, Asr: {
-              imam: 'Ustadz Ahmad', pre: 1, iqamah: 10, prayer: 10, rawatib: 0
-            }, Maghrib: {
               imam: 'Ustadz Ahmad', pre: 1, iqamah: 10, prayer: 10
+            }, Maghrib: {
+              imam: 'Ustadz Ahmad', pre: 1, iqamah: 10, prayer: 10, rawatib: 5
             }, Isha: {
               imam: 'Ustadz Ahmad', pre: 1, iqamah: 10, prayer: 10, rawatib: 5
             }
@@ -1823,7 +1823,7 @@
           osc.frequency.value = freq;
           osc.connect(gain);
           gain.connect(audioCtx.destination);
-          const vol = Math.min(1, +C.g.beepVolume || 1);
+          const vol = Math.min(2, +C.g.beepVolume || 1);
           gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
           gain.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.003);
           osc.start();
@@ -1839,12 +1839,12 @@
         console.log('BEEP BLOCK LOADED');
         window.beepWarning = function() {
           beepOnce(2100, 60);
-          setTimeout(() => beepOnce(2100, 60), 160);
-          setTimeout(()=>beepOnce(2100,60),240);
+          setTimeout(() => beepOnce(2100, 60), 140);
+          setTimeout(()=>beepOnce(2100,60),260);
         };
         window.beepSholat = function() {
           console.log('SHOLAT BEEP EXECUTED');
-          beepOnce(1000, 600);
+          beepOnce(800, 600);
         };
         //audio unloc
         function keepAudioAlive() {
@@ -2977,7 +2977,7 @@
           // ======================
           // MODE HARIAN
           // ======================
-          const im = 'IMAM: ' + C.daily[s.k].imam;
+          const im = 'IMAM : ' + C.daily[s.k].imam;
           if (s.m === 'pre') {
             setP(
               'SEBENTAR LAGI MASUK WAKTU',
@@ -3018,7 +3018,7 @@
             setP(
               'SHALAT BERJAMAAH',
               namaSholat(s.k),
-              r,
+              '',
               im,
               '',
               true,
@@ -3032,7 +3032,7 @@
               'RAWATIB',
               namaSholat(s.k),
               r,
-              im,
+              '',
               '',
               true,
               true,
@@ -3041,10 +3041,10 @@
               );
           }
           else if (s.m === 'tarawih') {
-            const imamTarawih = C.tarawih && C.tarawih.imam ? C.tarawih.imam: '';
+            const imamTarawih = C.daily.Isha.imam || '';
             const bilalTarawih = C.tarawih && C.tarawih.bilal ? C.tarawih.bilal: '';
             const petugas = (imamTarawih ? 'IMAM: ' + imamTarawih: '') +
-              (imamTarawih && bilalTarawih ? '<br>': '') +
+              (imamTarawih && bilalTarawih ? '&nbsp;&nbsp;&nbsp;': '') +
               (bilalTarawih ? 'BILAL: ' + bilalTarawih: '');
             setP('Sholat', 'TARAWIH', r, petugas, '', true, true, n, false);
           }
@@ -3511,7 +3511,7 @@
             modified.getFullYear();
         }
         window.addEventListener('load', () => {
-            $('version').textContent = VERSION + '-' + getVersionUpdateDate();
+            $('version').textContent = VERSION + ' • Update ' + getVersionUpdateDate();
           });
         // run api url
         const API_URL =
@@ -3748,7 +3748,7 @@
             C.tarawih =
               C.tarawih || {};
             C.tarawih.imam =
-              api.imam.ImamTaraweh || api.imam.ImamTarawih || C.tarawih.imam || '';
+              C.daily.Isha.imam || '';
             C.tarawih.bilal =
               api.imam.BilalTaraweh || api.imam.BilalTarawih || C.tarawih.bilal || '';
             console.log(
