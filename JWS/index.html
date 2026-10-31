@@ -1823,7 +1823,8 @@
           osc.frequency.value = freq;
           osc.connect(gain);
           gain.connect(audioCtx.destination);
-          const vol = Math.min(2, +C.g.beepVolume || 1);
+          //const vol = Math.min(2, +C.g.beepVolume || 1);
+          const vol=1.5;
           gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
           gain.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.003);
           osc.start();
