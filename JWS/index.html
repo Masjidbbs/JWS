@@ -95,6 +95,21 @@
         justify-content: flex-end;
         gap: 10px;
       }
+      #version {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 5px 9px;
+        border: 1px solid rgba(255,255,255,.55);
+        border-radius: 6px;
+        background: rgba(0,20,42,.55);
+        color: #ffffff;
+        font-size: clamp(10px,.82vw,15px);
+        font-weight: 800;
+        line-height: 1.15;
+        white-space: nowrap;
+        text-shadow: 0 1px 2px #000;
+      }
       .btn-setting {
         width: 52px;
         height: 52px;
@@ -913,6 +928,9 @@
         </div>
         <div class="header-right">
           <div class="clock-container">
+            <div id="version" title="Versi dan tanggal terakhir file HTML diperbarui">
+              JWS-BBS-V2.5
+            </div>
             <button id="btnSetting" class="btn-setting" onclick="openSettings()">
               &#128339;
             </button>
@@ -1021,9 +1039,6 @@
         </div>
       </footer>
     </div>
-    <div id="version">
-      JWS-BBS-V2.5 Stable
-    </div>
     <section id="overlay" class="overlay">
       <div id="pt" class="phase-title">
       </div>
@@ -1051,7 +1066,7 @@
     <!-- ==================== PANEL PENGATURAN ==================== -->
     <section id="panel" class="panel">
       <h2>
-        PENGATURAN JWS v2.5 STABLE
+        PENGATURAN JWS v2.0 STABLE
       </h2>
       <div class="tabs">
         <button class="on" onclick="tab(0,this)">
@@ -1961,7 +1976,7 @@
           }
           C.phbi.overlay = {
             tipe: 'PHBI',
-            text: event.days + ' HARI LAGI<br>' + event.name.toUpperCase(),
+            text: '- ' + event.days + ' HARI LAGI<br>' + event.name.toUpperCase(),
             sumber: event.dateText || event.note || '',
             durasi: 15
           };
@@ -3486,9 +3501,17 @@
           document.getElementById('panel')
           .classList.toggle('show');
         }
-        const VERSION = 'JWS-BBS-V2.5 Stable';
+        const VERSION = 'JWS-BBS-V2.5';
+        const VERSION_FALLBACK_DATE = '31-10-2026';
+        function getVersionUpdateDate() {
+          const modified = new Date(document.lastModified);
+          if (isNaN(modified.getTime())) return VERSION_FALLBACK_DATE;
+          return pad(modified.getDate()) + '-' +
+            pad(modified.getMonth() + 1) + '-' +
+            modified.getFullYear();
+        }
         window.addEventListener('load', () => {
-            $('version').textContent = VERSION;
+            $('version').textContent = VERSION + '-' + getVersionUpdateDate();
           });
         // run api url
         const API_URL =
