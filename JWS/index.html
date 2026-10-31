@@ -1823,8 +1823,8 @@
           osc.frequency.value = freq;
           osc.connect(gain);
           gain.connect(audioCtx.destination);
-          //const vol = Math.min(2, +C.g.beepVolume || 1);
-          const vol=1.5;
+          const vol = Math.min(1, +C.g.beepVolume || 1);
+          //const vol=1.5;
           gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
           gain.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.003);
           osc.start();
@@ -1839,13 +1839,13 @@
         }
         console.log('BEEP BLOCK LOADED');
         window.beepWarning = function() {
-          beepOnce(2100, 60);
-          setTimeout(() => beepOnce(2100, 60), 140);
-          setTimeout(()=>beepOnce(2100,60),260);
+          beepOnce(2500, 60);
+          setTimeout(() => beepOnce(2500, 60), 140);
+          setTimeout(()=>beepOnce(2500,60),240);
         };
         window.beepSholat = function() {
           console.log('SHOLAT BEEP EXECUTED');
-          beepOnce(800, 600);
+          beepOnce(1000, 600);
         };
         //audio unloc
         function keepAudioAlive() {
