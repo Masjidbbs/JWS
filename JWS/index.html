@@ -3868,47 +3868,26 @@
         //
         // AGENDA
         //
-        function formatAgendaDate(value) {
-          if (!value) return '';
-          var raw = String(value).trim();
-          var bulan = [
-            'Jan', 'Feb', 'Mar', 'Apr',
-            'Mei', 'Jun', 'Jul', 'Agu',
-            'Sep', 'Okt', 'Nov', 'Des'
-            ];
-          var dateOnly = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-          if (dateOnly) {
-            // Tanggal dari Google Sheet/API sudah terpotong sebagai tanggal UTC hari sebelumnya.
-            var corrected = new Date(Date.UTC(
-              Number(dateOnly[1]),
-              Number(dateOnly[2]) - 1,
-              Number(dateOnly[3]) + 1,
-              12, 0, 0
-              ));
-            return pad(corrected.getUTCDate()) + '-' +
-              bulan[corrected.getUTCMonth()] + '-' +
-              corrected.getUTCFullYear();
-          }
-          var date = new Date(raw);
-          if (!isNaN(date.getTime())) {
-            try {
-              var parts = new Intl.DateTimeFormat('en-GB', {
-                  timeZone: C.g.zone || 'Asia/Jakarta',
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric'
-                }).formatToParts(date);
-              var values = {};
-              parts.forEach(function(part) {
-                  values[part.type] = part.value;
-                });
-              return values.day + '-' +
-                bulan[Number(values.month) - 1] + '-' +
-                values.year;
-            } catch (e) {}
-          }
-          return raw;
-        }
+function formatAgendaDate(value){
+  if(!value)return '';
+
+  var raw=String(value).trim();
+  var bulan=[
+    'Jan','Feb','Mar','Apr',
+    'Mei','Jun','Jul','Agu',
+    'Sep','Okt','Nov','Des'
+  ];
+
+  var dateOnly=raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+  if(dateOnly){
+    return dateOnly[3]+'-'+
+      bulan[Number(dateOnly[2])-1]+'-'+
+      dateOnly[1];
+  }
+
+  return raw;
+}
         function renderAgenda(list) {
           if (!list || !list.length) {
             return;
