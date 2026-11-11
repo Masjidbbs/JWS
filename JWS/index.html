@@ -3946,6 +3946,17 @@ function formatAgendaDate(value){
               }
             }, 200);
         }
+        // AUTO RELOAD JWS JAM 00:00
+function autoReloadJWS() {
+  const now = new Date();
+  const today = now.toDateString();
+  const lastReload = localStorage.getItem('JWS_LAST_AUTO_RELOAD');
+
+  if (now.getHours() === 0 && now.getMinutes() === 0 && lastReload !== today) {
+    localStorage.setItem('JWS_LAST_AUTO_RELOAD', today);
+    location.reload();
+  }
+}
         apply();
         const cache =
           loadCache();
@@ -3957,9 +3968,7 @@ function formatAgendaDate(value){
           loadApiData,
           60000
           );
-        setInterval(() => {
-            location.reload(true);
-          }, 3600000);
+setInterval(autoReloadJWS, 30000);
         setInterval(
           refreshTicker,
           300000
